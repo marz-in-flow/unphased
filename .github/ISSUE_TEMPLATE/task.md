@@ -1,3 +1,9 @@
+---
+name: Task
+about: Structured development task
+assignees: ["marz-in-flow"]
+---
+
 ## Goal
 Clearly describe the purpose of this task.
 
