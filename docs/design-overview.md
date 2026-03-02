@@ -22,3 +22,9 @@ Defines:
 - Phase-to-mode mapping
 - Mode-to-effort filtering logic
 - Rationale for dynamic mode computation
+
+## 4. MVP Planning & Specifications (Working Document)
+
+[UnPhased MVP Brainstorm & Spec Document (Google Doc)](https://docs.google.com/document/d/19X9Q4KkbTfQIPjMSKcaG9A29Xg6pUa4mwWJgXYhSLr0/edit?usp=sharing)
+
+This document contains early brainstorming, feature scoping, and evolving MVP specifications. It captures product thinking that informed the Phase 1 backend architecture.
