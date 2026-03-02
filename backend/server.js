@@ -1,4 +1,12 @@
+require("dotenv").config();
+
 const express = require("express");
+
+const { Pool } = require("pg");
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+});
 
 const app = express();
 app.use(express.json());
@@ -19,6 +27,15 @@ app.get("/today", (req, res) => {
             { title: "Short walk or light stretch", effort: "low"}
         ]
     });
+});
+
+app.get("/db-test", async (req, res) => {
+  try {
+    await pool.query("SELECT 1");
+    res.json({ ok: true });
+  } catch (err) {
+    res.status(500).json({ ok: false, error: err.message });
+  }
 });
 
 const PORT = process.env.PORT || 3000;
