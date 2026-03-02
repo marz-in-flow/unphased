@@ -43,7 +43,7 @@ app.get("/today", async (req, res) => {
       mode: "Unknown (mode logic next)",
       cycle_profile: profileResult.rows[0] ?? null,
       suggestions: suggestionsResult.rows,
-    });
+    }); 
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -56,6 +56,21 @@ app.get("/db-test", async (req, res) => {
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message });
   }
+});
+
+app.post("/cycle-profile", (req, res) => {
+  const { cycle_start_date, cycle_length_days, period_length_days } = req.body;
+
+  if (!cycle_start_date || !cycle_length_days) {
+    return res.status(400).json({
+      error: "cycle_start_date and cycle_length_days are required",
+    });
+  }
+
+  res.status(201).json({
+    message: "Cycle profile received (DB insert coming next).",
+    data: { cycle_start_date, cycle_length_days, period_length_days: period_length_days ?? null },
+  });
 });
 
 const PORT = process.env.PORT || 3000;
