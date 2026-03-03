@@ -1,0 +1,28 @@
+meta {
+  name: Create Cycle Profile
+  type: http
+  seq: 3
+}
+
+post {
+  url: http://localhost:3000/cycle-profile
+  body: json
+  auth: inherit
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "cycle_start_date": "2026-03-01",
+    "cycle_length_days": 28,
+    "period_length_days": 5
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}
