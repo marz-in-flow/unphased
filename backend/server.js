@@ -2,6 +2,8 @@ require("dotenv").config();
 
 const express = require("express");
 
+const { getDailyGuidance } = require("./utils/cycleUtils");
+
 const { Pool } = require("pg");
 
 const pool = new Pool({
@@ -34,13 +36,18 @@ app.get("/today", async (req, res) => {
     const profileResult = await pool.query(
       "SELECT * FROM cycle_profiles ORDER BY id ASC LIMIT 1"
     );
+    const cycleStartDate = profileResult.rows[0].cycle_start_date;
+    const cycleLengthDays = profileResult.rows[0].cycle_length_days;
+    const dailyGuidance = getDailyGuidance(cycleStartDate, cycleLengthDays);
+    
     const suggestionsResult = await pool.query(
       "SELECT id, title, effort_level, phase_tag FROM suggestions ORDER BY id ASC LIMIT 5"
     );
 
     res.json({
-      phase: "Unknown (phase logic next)",
-      mode: "Unknown (mode logic next)",
+      day: dailyGuidance.day,
+      phase: dailyGuidance.phase,
+      mode: dailyGuidance.mode,
       cycle_profile: profileResult.rows[0] ?? null,
       suggestions: suggestionsResult.rows,
     }); 

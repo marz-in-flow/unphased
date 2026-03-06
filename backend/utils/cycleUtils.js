@@ -3,7 +3,7 @@ function getCycleDay(cycleStartDate) {
     const today = new Date();
     const diffMs = today - start;
     const diffDays = diffMs / (1000 * 60 * 60 * 24);
-    return diffDays + 1;
+    return Math.round(diffDays + 1);
 }
 
 function getCyclePhase(cycleDay, cycleLengthDays) { 
@@ -44,3 +44,5 @@ function getDailyGuidance(cycleStartDay, cycleLengthDays) {
         mode: mode
     };
 }
+
+module.exports = { getDailyGuidance };
