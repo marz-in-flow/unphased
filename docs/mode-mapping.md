@@ -13,7 +13,7 @@ Mode is computed dynamically during the `/today` request and is not stored in th
 
 ## Phase → Mode Mapping
 
-| Phase       | Mode     | Description                                 |
+| Phase       | Mode     | Description                                  |
 |------------|----------|----------------------------------------------|
 | Menstrual  | Restore  | Lower energy. Prioritize rest and reset.     |
 | Follicular | Build    | Increasing energy. Initiate and create.      |
@@ -33,15 +33,32 @@ Mode is computed dynamically during the `/today` request and is not stored in th
 
 ### Filtering Rules
 
-When generating daily suggestions:
+When generating daily suggestions, **both conditions must be met**:
 
-1. Include suggestions where:
-   - `effort_level` is within the allowed set for the current mode.
+1. `effort_level` is within the allowed set for the current mode
+2. `phase_tag` matches the current phase OR `phase_tag` is NULL
 
-2. Additionally include suggestions where:
-   - `phase_tag` is `NULL`  
-   OR  
-   - `phase_tag` matches the current phase.
+A suggestion must pass both filters to be included.
+
+---
+
+## Low Energy Override
+
+If the user activates the "Low energy day?" toggle on the Today screen:
+
+- Allowed effort levels are capped at **low only**, regardless of current phase or mode.
+- Phase-tagged suggestions are still included if they match the current phase and are low effort.
+- NULL phase_tag suggestions are included if they are low effort.
+
+This override only works downward. Users cannot override upward beyond their phase default.
+
+### Logic Summary
+```
+if low_energy_override:
+    allowed_effort = ['low']
+else:
+    allowed_effort = default for current mode
+```
 
 ---
 
@@ -50,17 +67,15 @@ When generating daily suggestions:
 - Mode is not persisted because it:
   - Changes daily
   - Is derived from phase
-  - May later incorporate mood or energy inputs
+  - Can be modified by the low energy override
 
 - Separating **phase** (biological state) from **mode** (behavioral interpretation) allows:
   - Flexible UX messaging
-  - Future overrides (e.g., low energy input during ovulatory phase)
+  - Downward energy overrides without changing phase data
   - Clear separation of data layer vs. logic layer
 
 ---
 
 ## Future Extensions (Not in Phase 1)
 
-- Mood-based mode adjustment
-- User-defined effort tolerance
-- Adaptive filtering based on usage patterns
+- LLM-powered personalized suggestions
