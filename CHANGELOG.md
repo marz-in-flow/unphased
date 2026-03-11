@@ -1,6 +1,16 @@
 # Changelog
 
 All notable changes to UnPhased will be documented here.
+## 2026-03-10 | Phase 1: MVP Backend + Design
+### Added
+- UI wireframes for onboarding, Today, Mind, Body, and Rest screens
+- Real example suggestions and rationale copy in wireframes
+- Energy input (optional) on Today screen
+- Calendar popup concept for predicted cycle dates
+
+### Changed
+- Organized docs into architecture, schema, and wireframes subfolders
+- Updated design overview with new file paths and wireframe links
 
 ## 2026-03-05 | Phase 1: MVP Backend
 ### Added
