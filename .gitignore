@@ -140,3 +140,6 @@ vite.config.ts.timestamp-*
 
 # macOS
 .DS_Store
+
+# api tests
+api-tests/
