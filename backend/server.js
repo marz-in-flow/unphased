@@ -23,6 +23,12 @@ app.get("/today", async (req, res) => {
       "SELECT * FROM cycle_profiles ORDER BY id DESC LIMIT 1"
     );
     
+    if (!profileResult.rows[0]) {
+      return res.status(404).json({
+        error: "No cycle profile found. Please enter your cycle information."
+      });
+    }
+
     const cycleStartDate = profileResult.rows[0].cycle_start_date;
     const cycleLengthDays = profileResult.rows[0].cycle_length_days;
     const dailyGuidance = getDailyGuidance(cycleStartDate, cycleLengthDays);
