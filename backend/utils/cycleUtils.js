@@ -1,6 +1,8 @@
 function getCycleDay(cycleStartDate) {
     const start = new Date(cycleStartDate);
     const today = new Date();
+    start.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
     const diffMs = today - start;
     const diffDays = diffMs / (1000 * 60 * 60 * 24);
     return Math.round(diffDays + 1);
@@ -33,6 +35,18 @@ function getMode(phase) {
     } 
 } 
 
+function getEffortLevels(mode) {
+    if (mode === "Restore") { 
+        return ["low"]; 
+    } else if (mode ==="Build") { 
+        return ["low", "medium"]; 
+    } else if (mode === "Peak") { 
+        return ["medium", "high"]; 
+    } else { 
+        return ["low", "medium"] ; 
+    } 
+}
+
 function getDailyGuidance(cycleStartDay, cycleLengthDays) {
     const day = getCycleDay(cycleStartDay);
     const phase = getCyclePhase(day, cycleLengthDays);
@@ -45,4 +59,4 @@ function getDailyGuidance(cycleStartDay, cycleLengthDays) {
     };
 }
 
-module.exports = { getDailyGuidance };
+module.exports = { getDailyGuidance, getEffortLevels };

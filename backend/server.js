@@ -2,7 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 
-const { getDailyGuidance } = require("./utils/cycleUtils");
+const { getDailyGuidance, getEffortLevels } = require("./utils/cycleUtils");
 
 const { Pool } = require("pg");
 
@@ -17,32 +17,28 @@ app.get("/health", (req, res) => {
   res.json({ status: "ok", service: "unphased-backend" });
 });
 
-// app.get("/today", (req, res) => {
-//     res.json({
-//         date: new Date().toISOString().slice(0,10),
-//         phase: "Unknown (placeholder)",
-//         mode: "Steady (placeholder)",
-//         guidance: "Daily direction placeholder (logic + DB coming next).",
-//         suggestions: [
-//             { title: "Tidy one small area for 10 minutes", effort: "low" },
-//             { title: "Prep a simple protein and veggie meal", effort: "medium" },
-//             { title: "Short walk or light stretch", effort: "low"}
-//         ]
-//     });
-// });
-
 app.get("/today", async (req, res) => {
   try {
     const profileResult = await pool.query(
-      "SELECT * FROM cycle_profiles ORDER BY id ASC LIMIT 1"
+      "SELECT * FROM cycle_profiles ORDER BY id DESC LIMIT 1"
     );
+    
     const cycleStartDate = profileResult.rows[0].cycle_start_date;
     const cycleLengthDays = profileResult.rows[0].cycle_length_days;
     const dailyGuidance = getDailyGuidance(cycleStartDate, cycleLengthDays);
     
-    const suggestionsResult = await pool.query(
-      "SELECT id, title, effort_level, phase_tag FROM suggestions ORDER BY id ASC LIMIT 5"
-    );
+    const phase = dailyGuidance.phase;
+    const effortLevels = getEffortLevels(dailyGuidance.mode);
+    
+    const suggestionsResult = await pool.query(`
+      SELECT id, title, effort_level, phase_tag 
+      FROM suggestions 
+      WHERE effort_level = ANY($1)
+      AND (phase_tag = $2 OR phase_tag IS NULL)
+      ORDER BY id ASC LIMIT 5
+    `,
+    [effortLevels, phase]
+  );
 
     res.json({
       day: dailyGuidance.day,
@@ -65,7 +61,7 @@ app.get("/db-test", async (req, res) => {
   }
 });
 
-app.post("/cycle-profile", (req, res) => {
+app.post("/cycle-profile", async (req, res) => {
   const { cycle_start_date, cycle_length_days, period_length_days } = req.body;
 
   if (!cycle_start_date || !cycle_length_days) {
@@ -74,10 +70,19 @@ app.post("/cycle-profile", (req, res) => {
     });
   }
 
-  res.status(201).json({
-    message: "Cycle profile received (DB insert coming next).",
-    data: { cycle_start_date, cycle_length_days, period_length_days: period_length_days ?? null },
-  });
+  try {
+    const query = `INSERT INTO cycle_profiles (cycle_start_date, cycle_length_days, period_length_days) 
+    VALUES ($1, $2, $3) RETURNING *`;
+    const values = [cycle_start_date, cycle_length_days, period_length_days];
+    const result = await pool.query(query, values);
+
+    res.status(201).json({
+      message: "Cycle profile saved.",
+      data: result.rows[0],
+    }); 
+} catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 const PORT = process.env.PORT || 3000;
