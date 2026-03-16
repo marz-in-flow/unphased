@@ -51,28 +51,29 @@ app.get("/today", async (req, res) => {
     const cycleLengthDays = profileResult.rows[0].cycle_length_days;
     
     const dailyGuidance = getDailyGuidance(cycleStartDate, cycleLengthDays);
-    
     const phase = dailyGuidance.phase;
     
-    const effortLevels = getEffortLevels(dailyGuidance.mode);
+    const lowEnergy = req.query.low_energy === "true";
+    const allowedEffortLevels = lowEnergy ? ["low"] : getEffortLevels(dailyGuidance.mode);
     
-    // ANY($1) checks effort_level against the allowed array.
+    // ANY($1) checks effort_level against the allowedEffortLevels array.
     // Both conditions must be met: effort matches mode AND phase matches or is NULL
     const suggestionsResult = await pool.query(`
-      SELECT id, title, effort_level, phase_tag 
+      SELECT id, title, description, effort_level, phase_tag, category 
       FROM suggestions 
       WHERE effort_level = ANY($1)
       AND (phase_tag = $2 OR phase_tag IS NULL)
-      ORDER BY id ASC LIMIT 5
+      ORDER BY id ASC 
+      LIMIT 5
     `,
-    [effortLevels, phase]
+    [allowedEffortLevels, phase]
   );
 
     res.json({
       day: dailyGuidance.day,
       phase: dailyGuidance.phase,
       mode: dailyGuidance.mode,
-      cycle_profile: profileResult.rows[0] ?? null,
+      cycle_profile: profileResult.rows[0],
       suggestions: suggestionsResult.rows,
     }); 
   } catch (err) {
