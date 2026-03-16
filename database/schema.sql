@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS suggestions (
   id SERIAL PRIMARY KEY,
   title TEXT NOT NULL,
   description TEXT,
+  category TEXT NOT NULL CHECK (category in ('mind', 'move', 'rest', 'nourish')),
   effort_level TEXT NOT NULL CHECK (effort_level IN ('low','medium','high')),
   phase_tag TEXT CHECK (phase_tag IN ('menstrual','follicular','ovulatory','luteal')),
   created_at TIMESTAMP NOT NULL DEFAULT NOW()
