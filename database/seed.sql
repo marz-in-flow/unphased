@@ -1,12 +1,60 @@
--- UnPhased Phase 1 seed data
+DELETE FROM suggestions;
 
--- single-profile MVP (id will be 1 if table is empty)
-INSERT INTO cycle_profiles (cycle_start_date, cycle_length_days, period_length_days)
-VALUES ('2026-02-15', 28, 5);
+INSERT INTO suggestions (title, description, effort_level, phase_tag, category) VALUES
+-- MIND
+('Name One Need', 'Pick one thing your body or brain needs right now so everything feels less noisy.', 'low', 'menstrual', 'mind'),
+('Mute Nonessential Alerts', 'Cut the extra pings so your brain gets a break from constant pulling.', 'low', 'menstrual', 'mind'),
+('List Three Priorities', 'Give your focus a short lane so your brain is not trying to hold everything at once.', 'medium', 'follicular', 'mind'),
+('Start With Five Minutes', 'Lower the startup friction and let your brain ease into motion.', 'low', 'follicular', 'mind'),
+('Set Recurring Alarms', 'Automate your reminders now while your brain has the clarity to anticipate future needs.', 'low', 'follicular', 'mind'),
+('Batch Tough Decisions', 'Use your sharper energy now so your brain is not stuck revisiting choices later.', 'high', 'ovulatory', 'mind'),
+('Lead One Important Task', 'Aim your strongest focus at one thing that actually matters to you.', 'medium', 'ovulatory', 'mind'),
+('Write Tomorrow First Step', 'Make tomorrow easier by leaving your brain one clear place to begin.', 'low', 'luteal', 'mind'),
+('Use Two-Item Checklist', 'Keep your expectations tight so your brain does not spiral over a giant list.', 'medium', 'luteal', 'mind'),
+('Delete Unused Phone Apps', 'Reduce digital visual noise by removing a few apps your brain does not actually need.', 'low', 'menstrual', 'mind'),
+('Do a Brain Dump', 'Get the mental tabs out of your head so your brain can breathe.', 'medium', NULL, 'mind'),
+('Set One Tiny Timer', 'Give your brain a small container so starting feels less annoying.', 'low', NULL, 'mind'),
 
-INSERT INTO suggestions (title, description, effort_level, phase_tag) VALUES
-('Tidy one small area for 10 minutes', 'Quick win to reduce mental clutter.', 'low', NULL),
-('Short walk or light stretch', 'Gentle movement to support mood and energy.', 'low', 'menstrual'),
-('Meal prep: protein + veggie', 'Simple meal to reduce decision fatigue.', 'medium', 'follicular'),
-('Focus sprint: 25 minutes', 'Short focused sprint with a clear end.', 'medium', NULL),
-('Plan tomorrow lightly', 'Outline only essentials; avoid overcommitting.', 'low', 'luteal');
+-- MOVE
+('Take a Ten-Minute Walk', 'Wake up your body and shift your mood without asking much from your brain.', 'low', 'menstrual', 'move'),
+('Do Seated Hip Circles', 'Loosen your body gently while keeping the effort and transition cost low.', 'low', 'menstrual', 'move'),
+('Try a Bodyweight Circuit', 'Use your rising energy on simple moves that help your body feel strong and awake.', 'medium', 'follicular', 'move'),
+('Walk During One Call', 'Stack movement onto something you are already doing so it feels easier to start.', 'low', 'follicular', 'move'),
+('Do a Power Walk', 'Channel your extra energy into movement that clears your head and gets you moving fast.', 'medium', 'ovulatory', 'move'),
+('Lift a Little Heavier', 'Use your stronger window to push a bit more and let your body cash in on it.', 'high', 'ovulatory', 'move'),
+('Try a New Workout Class', 'Use your peak confidence to try something challenging before your brain talks you out of it.', 'high', 'ovulatory', 'move'),
+('Stretch Before Bed', 'Release the tension your body has been carrying before you try to sleep.', 'low', 'luteal', 'move'),
+('Do a Short Pilates Flow', 'Support your core and calm your system with movement that feels structured but manageable.', 'medium', 'luteal', 'move'),
+('Five Minute Childs Pose', 'Let your lower back release and your nervous system settle without getting off the floor.', 'low', 'menstrual', 'move'),
+('Dance to One Song', 'Give your brain a quick dopamine hit and let your body shake off stuck energy.', 'low', NULL, 'move'),
+('Take the Stairs Once', 'Sneak in a small win for your body without turning it into a whole thing.', 'low', NULL, 'move'),
+
+-- REST
+('Use a Heating Pad', 'Give your body some warmth and let your nervous system unclench a little.', 'low', 'menstrual', 'rest'),
+('Dim Lights Early', 'Cue your brain that it is safe to slow down before you hit a wall.', 'low', 'menstrual', 'rest'),
+('Lie Flat on the Floor', 'Let gravity decompress your spine and soothe your nervous system with zero expectations.', 'low', 'menstrual', 'rest'),
+('Reset One Small Space', 'Channel that fresher energy into clearing one spot so your brain can settle.', 'medium', 'follicular', 'rest'),
+('Prep Tonights Wind-Down', 'Make rest easier to start by setting up the pieces before your energy drops.', 'low', 'follicular', 'rest'),
+('Prep Tomorrows Outfit', 'Remove morning friction by laying out comfortable clothes before your brain loses steam.', 'medium', 'follicular', 'rest'),
+('Protect One No-Phone Hour', 'Give your brain one clean stretch without input so your system can come down.', 'medium', 'ovulatory', 'rest'),
+('Book a Recovery Block', 'Claim rest on purpose so your calendar stops acting like your body has no limits.', 'high', 'ovulatory', 'rest'),
+('Start Bed Prep Early', 'Get ahead of the late-night second wind before your brain starts bargaining.', 'low', 'luteal', 'rest'),
+('Take a Screen Curfew', 'Lower the stimulation so your brain has a real shot at powering down.', 'medium', 'luteal', 'rest'),
+('Epsom Salt Bath Soak', 'Let warm water and magnesium salts ease your muscles so your body can actually wind down.', 'low', 'luteal', 'rest'),
+('Play Brown Noise', 'Soften the random distractions and give your brain something steadier to settle into.', 'low', NULL, 'rest'),
+('Set Out Sleep Essentials', 'Remove little bedtime obstacles so rest feels easier to follow through on.', 'low', NULL, 'rest'),
+
+-- NOURISH
+('Sip Ginger Chamomile Tea', 'Warm your body, support hydration, and lean on calming apigenin and gingerols when your system feels fried.', 'low', 'menstrual', 'nourish'),
+('Eat Berry Flax Yogurt', 'Give your body protein, omega-3s, and fiber in a combo that is easy to grab.', 'low', 'menstrual', 'nourish'),
+('Top Cottage Cheese With Pumpkin Seeds', 'Feed your body protein, zinc, and magnesium without making food prep a project.', 'low', 'follicular', 'nourish'),
+('Pack Turkey Hummus Wrap', 'Set yourself up with protein, iron, and fiber so your energy does not crash halfway through the day.', 'medium', 'follicular', 'nourish'),
+('Pumpkin Seed Trail Mix', 'Grab a handful of pumpkin seeds and almonds for a quick zinc and magnesium boost.', 'low', 'follicular', 'nourish'),
+('Lentil and Veggie Soup', 'Cook a simple batch to build your iron stores and give your rising energy something solid to run on.', 'medium', 'follicular', 'nourish'),
+('Cook Salmon Quinoa Bowl', 'Use your stronger energy to make a meal packed with protein, omega-3s, and magnesium for steadier fuel.', 'medium', 'ovulatory', 'nourish'),
+('Prep Sesame Stir-Fry', 'Put your higher-capacity energy into a meal rich in protein, calcium, and fiber your body can keep running on.', 'high', 'ovulatory', 'nourish'),
+('Brew Peppermint Cinnamon Tea', 'Ease the puffiness and support digestion with hydrating warmth plus antioxidant plant compounds.', 'low', 'luteal', 'nourish'),
+('Make Sunflower Oat Bowl', 'Give your body a steadier start with fiber, magnesium, and vitamin E that actually sticks with you.', 'medium', 'luteal', 'nourish'),
+('Sunflower Seed Butter Toast', 'Spread sunflower seed butter on whole-grain toast for progesterone-supporting fats and steady blood sugar.', 'medium', 'luteal', 'nourish'),
+('Keep Apples Cheese Almonds', 'Keep an easy snack nearby with fiber, protein, and magnesium before your body hits empty.', 'low', NULL, 'nourish'),
+('Take Magnesium Glycinate', 'Support your body winding down with magnesium that helps your muscles and brain ease up for the night.', 'low', NULL, 'nourish');
