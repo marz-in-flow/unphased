@@ -31,6 +31,10 @@ Mode is computed dynamically during the `/today` request and is not stored in th
 | Peak    | medium, high          |
 | Protect | low, medium           |
 
+Note: Effort levels reflect executive function demand, 
+not just physical exertion. For ADHD users, task initiation 
+and transition costs are factored into effort classification.
+
 ### Filtering Rules
 
 When generating daily suggestions, **both conditions must be met**:
