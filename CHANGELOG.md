@@ -1,6 +1,23 @@
 # Changelog
 
 All notable changes to UnPhased will be documented here.
+
+## 2026-03-17 | Phase 2: Frontend Setup
+
+### Added
+- Frontend project structure with module-based architecture
+- Tab navigation with view switching (Today, Mind, Body, Rest)
+- Placeholder render functions for all screens
+- index.html with Bootstrap CDN
+
+## 2026-03-17 | Phase 1: MVP Backend 
+
+### Added
+- Low energy override flag on /today endpoint
+- Category column on suggestions table (mind, move, rest, nourish)
+- Expanded seed data to 50 suggestions across all phases and categories
+- Executive function note added to effort level documentation
+
 ## 2026-03-10 | Phase 1: MVP Backend + Design
 ### Added
 - UI wireframes for onboarding, Today, Mind, Body, and Rest screens
