@@ -53,6 +53,9 @@ UnPhased follows a client-server architecture:
 unphased/
 ├── backend/
 ├── frontend/
+│   ├── css/
+│   ├── js/
+│   └── index.html
 ├── database/
 ├── docs/
 │   ├── architecture/
