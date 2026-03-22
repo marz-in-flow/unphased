@@ -1,5 +1,5 @@
 /**
- * cycleUtils.js — Core cycle calculation and mode mapping logic.
+ * cycleUtils.js — Core cycle calculation and mode mapping logic based on cycle start date and average cycle length provided by user.
  */
 
 /**
