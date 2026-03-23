@@ -2,6 +2,30 @@ body {
   margin: 0;
 }
 
+#content {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+
 #bottom-nav {
   border-top: 1px solid black;
+}
+
+.onboarding-screen {
+  width: 100%;
+  max-width: 420px;
+}
+
+.onboarding-header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+#onboarding-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
 }

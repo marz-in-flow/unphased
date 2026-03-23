@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function showOnboarding() {
   document.getElementById("bottom-nav").style.display = "none";
+  document.getElementById("app-header").style.display = "none";
   renderOnboarding();
 }
 
