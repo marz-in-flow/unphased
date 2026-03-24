@@ -56,10 +56,10 @@ body {
 }
 
 .onboarding-logo {
-  width: 110px;
+  width: 100%;
   height: auto;
   display: block;
-  margin: 0 auto 0.75rem;
+  margin: 0 0 1rem 0;
 }
 
 .onboarding-header p {
@@ -86,6 +86,11 @@ body {
   margin-top: 0.5rem;
   padding: 0.75rem;
   font: inherit;
+  background-color: #f2717c;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
 }
 
 .disclaimer {
