@@ -1,13 +1,14 @@
 /**
- * server.js — Express backend for UnPhased.
+ * server.js — Express backend for unPhased.
  * Handles routing, database queries, and response formatting.
  * Business logic (phase calculation, mode mapping) is delegated to cycleUtils.js.
  */
 
 // Load environment variables from .env before any other code runs.
 require("dotenv").config();
-
+const cors = require("cors");
 const express = require("express");
+
 const { getDailyGuidance, getEffortLevels } = require("./utils/cycleUtils");
 const { Pool } = require("pg");
 
@@ -17,7 +18,9 @@ const pool = new Pool({
 });
 
 const app = express();
+
 app.use(express.json());// Parses incoming JSON request bodies so req.body is usable.
+app.use(cors());
 
 /**
  * GET /health — Confirms server is running.
@@ -103,25 +106,61 @@ app.get("/db-test", async (req, res) => {
  * @returns {201} { message, data } or {400} if validation fails or {500} if a db error occurs
  */
 app.post("/cycle-profile", async (req, res) => {
-  const { cycle_start_date, cycle_length_days, period_length_days } = req.body;
+  const { cycleStartDate, cycleLengthDays, periodLengthDays } = req.body;
 
-  if (!cycle_start_date || !cycle_length_days) {
+  if (!cycleStartDate || cycleLengthDays === undefined) {
     return res.status(400).json({
-      error: "cycle_start_date and cycle_length_days are required",
+      error: "cycleStartDate and cycleLengthDays are required",
+    });
+  }
+
+  const cycleLength = Number(cycleLengthDays);
+
+  if (!Number.isInteger(cycleLength)) {
+    return res.status(400).json({
+      error: "cycleLengthDays must be a whole number",
+    });
+  }
+
+  if (cycleLength < 21 || cycleLength > 40) {
+    return res.status(400).json({
+      error: "cycleLengthDays must be between 21 and 40",
+    });
+  }
+
+  const parsedDate = new Date(cycleStartDate);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return res.status(400).json({
+      error: "cycleStartDate must be a valid date",
+    });
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  parsedDate.setHours(0, 0, 0, 0);
+
+  if (parsedDate > today) {
+    return res.status(400).json({
+      error: "cycleStartDate cannot be in the future",
     });
   }
 
   try {
-    const query = `INSERT INTO cycle_profiles (cycle_start_date, cycle_length_days, period_length_days) 
-    VALUES ($1, $2, $3) RETURNING *`;
-    const values = [cycle_start_date, cycle_length_days, period_length_days];
+    const query = `
+      INSERT INTO cycle_profiles (cycle_start_date, cycle_length_days, period_length_days)
+      VALUES ($1, $2, $3)
+      RETURNING *
+    `;
+
+    const values = [cycleStartDate, cycleLength, periodLengthDays ?? null];
     const result = await pool.query(query, values);
 
     res.status(201).json({
       message: "Cycle profile saved.",
       data: result.rows[0],
-    }); 
-} catch (err) {
+    });
+  } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
