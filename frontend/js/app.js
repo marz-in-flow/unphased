@@ -24,6 +24,7 @@ function showOnboarding() {
 
 function showMainApp(view) {
   document.getElementById("bottom-nav").style.display = "flex";
+  document.getElementById("app-header").style.display = "block";
   showView(view);
 }
 

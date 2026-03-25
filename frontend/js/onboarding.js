@@ -1,5 +1,3 @@
-const API_BASE_URL = "http://localhost:3000";
-
 export function renderOnboarding(onComplete) {
   const content = document.getElementById("content");
 
@@ -48,7 +46,7 @@ export function renderOnboarding(onComplete) {
   `;
 
   const form = document.getElementById("onboarding-form");
-  const error = document.getElementById("onboarding-error");
+  const errorDisplay = document.getElementById("onboarding-error");
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
@@ -58,30 +56,30 @@ export function renderOnboarding(onComplete) {
     const cycleLengthRaw = formData.get("cycleLengthDays");
 
     if (!cycleStartDate || !cycleLengthRaw) {
-      error.textContent = "Please fill out all fields.";
+      errorDisplay.textContent = "Please fill out all fields.";
       return;
     }
 
     const cycleLengthDays = Number(cycleLengthRaw);
 
     if (!Number.isInteger(cycleLengthDays)) {
-      error.textContent = "Cycle length must be a whole number.";
+      errorDisplay.textContent = "Cycle length must be a whole number.";
       return;
     }
 
     if (cycleLengthDays < 21 || cycleLengthDays > 40) {
-      error.textContent = "Cycle length must be between 21 and 40 days.";
+      errorDisplay.textContent = "Cycle length must be between 21 and 40 days.";
       return;
     }
 
     const today = new Date().toISOString().split("T")[0];
 
     if (cycleStartDate > today) {
-      error.textContent = "Start date cannot be in the future.";
+      errorDisplay.textContent = "Start date cannot be in the future.";
       return;
     }
 
-    error.textContent = "";
+    errorDisplay.textContent = "";
 
     const cycleProfile = {
       cycleStartDate,
@@ -89,28 +87,17 @@ export function renderOnboarding(onComplete) {
     };
 
     try {
-      const response = await fetch(`${API_BASE_URL}/cycle-profile`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(cycleProfile),
-      });
+      const savedProfile = await postCycleProfile(cycleProfile);
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to save cycle profile.");
+      try {
+        localStorage.setItem("cycleProfile", JSON.stringify(savedProfile.data));
+      } catch (storageError) {
+        console.error("localStorage failed:", storageError);
       }
-
-      const savedProfile = await response.json();
-
-      localStorage.setItem("cycleProfile", JSON.stringify(savedProfile.data));
-
+      
       if (onComplete) {
         onComplete();
       }
-      console.log("Saved profile:", savedProfile);
-
     } catch (errorObj) {
       error.textContent = errorObj.message;
       console.error(errorObj);
