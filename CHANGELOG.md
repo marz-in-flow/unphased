@@ -2,6 +2,48 @@
 
 All notable changes to UnPhased will be documented here.
 
+## 2026-03-25 | Phase 2: Frontend 
+## Changelog — March 25, 2026
+
+### Changed
+- Added date-based pseudorandom ordering for daily suggestions in `/today`
+- Normalized `today` to local midnight using `new Date()` and `setHours(0, 0, 0, 0)` before generating the daily hash key
+- Simplified the hash input by removing date separators from the date key
+
+### Fixed
+- Removed the backend query `LIMIT` so `/today` can return enough suggestions to support all three categories
+
+## 2026-03-24 | Phase 2: Frontend 
+
+### Added
+- Today screen with daily guidance rendering
+- fetchDailyGuidance function in api.js
+- Centralized API base URL in api.js
+
+### Changed
+- Moved postCycleProfile from onboarding.js to api.js
+- Removed app-header from index.html (each screen owns its header)
+- Updated Bootstrap CDN to matching versions
+- Added nested try/catch for localStorage in onboarding
+
+## 2026-03-23 | Phase 2: Frontend 
+
+### Added 
+- Built onboarding screen for the Unphased MVP
+- Added onboarding form inputs for cycle start date and cycle length
+- Added basic onboarding styling and logo placement
+- Added client-side validation for onboarding input
+- Connected onboarding form submission to the backend
+- Saved returned cycle profile data to localStorage
+- Added transition from onboarding to Today screen after successful setup
+
+### Changed
+- Updated backend cycle profile handling and validation
+- Kept onboarding limited to cycle start date and cycle length for MVP scope
+
+### Fixed
+- Resolved local development issues with onboarding POST requests across separate frontend/backend origins
+
 ## 2026-03-17 | Phase 2: Frontend Setup
 
 ### Added
