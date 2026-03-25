@@ -14,3 +14,18 @@ export async function postCycleProfile(cycleProfile) {
 
   return response.json();
 }
+
+export async function fetchDailyGuidance(lowEnergy = false) {
+  const url = lowEnergy 
+    ? `${API_BASE_URL}/today?low_energy=true`
+    : `${API_BASE_URL}/today`;
+  
+  const response = await fetch(url);
+  
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || "Failed to retrieve daily guidance.");
+  }
+
+  return response.json();
+}

@@ -1,4 +1,4 @@
-import { postCycleProfile } from "./api";
+import { postCycleProfile } from "./api.js";
 
 export function renderOnboarding(onComplete) {
   const content = document.getElementById("content");
@@ -101,7 +101,7 @@ export function renderOnboarding(onComplete) {
         onComplete();
       }
     } catch (errorObj) {
-      error.textContent = errorObj.message;
+      errorDisplay.textContent = errorObj.message;
       console.error(errorObj);
     }
   });
