@@ -1,3 +1,5 @@
+import { postCycleProfile } from "./api";
+
 export function renderOnboarding(onComplete) {
   const content = document.getElementById("content");
 
@@ -94,7 +96,7 @@ export function renderOnboarding(onComplete) {
       } catch (storageError) {
         console.error("localStorage failed:", storageError);
       }
-      
+
       if (onComplete) {
         onComplete();
       }
