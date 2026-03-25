@@ -55,21 +55,30 @@ app.get("/today", async (req, res) => {
     
     const dailyGuidance = getDailyGuidance(cycleStartDate, cycleLengthDays);
     const phase = dailyGuidance.phase;
+    const mode = dailyGuidance.mode;
     
-    const lowEnergy = req.query.low_energy === "true";
-    const allowedEffortLevels = lowEnergy ? ["low"] : getEffortLevels(dailyGuidance.mode);
+    let allowedEffortLevels = getEffortLevels(mode);
+
+    //adjusts allowed effort levels based on low energy toggle
+    if (req.query.low_energy === "true") {
+      allowedEffortLevels = ["low"];
+    }
     
+   const todayKey = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/New_York"
+  }).format(new Date());
+
     // ANY($1) checks effort_level against the allowedEffortLevels array.
     // Both conditions must be met: effort matches mode AND phase matches or is NULL
-    const suggestionsResult = await pool.query(`
-      SELECT id, title, description, effort_level, phase_tag, category 
-      FROM suggestions 
+    const suggestionsResult = await pool.query(
+      `
+      SELECT id, title, description, effort_level, phase_tag, category
+      FROM suggestions
       WHERE effort_level = ANY($1)
-      AND (phase_tag = $2 OR phase_tag IS NULL)
-      ORDER BY id ASC 
-      LIMIT 5
+        AND (phase_tag = $2 OR phase_tag IS NULL)
+      ORDER BY md5($3 || '-' || id::text)
     `,
-    [allowedEffortLevels, phase]
+    [allowedEffortLevels, phase, todayKey]
   );
 
     res.json({

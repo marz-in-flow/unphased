@@ -14,7 +14,7 @@ function getCycleDay(cycleStartDate) {
     const today = new Date();
     start.setHours(0, 0, 0, 0);
     today.setHours(0, 0, 0, 0);
-    const diffMs = today - start;
+    const diffMs = today - start; //JS converts Date objects into internal timestamp values (milliseconds) first 
     const diffDays = diffMs / (1000 * 60 * 60 * 24);
     return Math.round(diffDays + 1);
 }
