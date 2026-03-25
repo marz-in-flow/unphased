@@ -16,7 +16,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function showOnboarding() {
   document.getElementById("bottom-nav").style.display = "none";
-  document.getElementById("app-header").style.display = "none";
   renderOnboarding(() => {
     showMainApp("today");
   });
@@ -24,7 +23,6 @@ function showOnboarding() {
 
 function showMainApp(view) {
   document.getElementById("bottom-nav").style.display = "flex";
-  document.getElementById("app-header").style.display = "block";
   showView(view);
 }
 
