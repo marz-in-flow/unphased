@@ -64,9 +64,10 @@ app.get("/today", async (req, res) => {
       allowedEffortLevels = ["low"];
     }
     
-   const todayKey = new Intl.DateTimeFormat("en-CA", {
-    timeZone: "America/New_York"
-  }).format(new Date());
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const todayKey = String(today.getTime());
 
     // ANY($1) checks effort_level against the allowedEffortLevels array.
     // Both conditions must be met: effort matches mode AND phase matches or is NULL
@@ -76,7 +77,7 @@ app.get("/today", async (req, res) => {
       FROM suggestions
       WHERE effort_level = ANY($1)
         AND (phase_tag = $2 OR phase_tag IS NULL)
-      ORDER BY md5($3 || '-' || id::text)
+      ORDER BY md5($3 || id::text)
     `,
     [allowedEffortLevels, phase, todayKey]
   );
