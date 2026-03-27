@@ -1,8 +1,27 @@
-export function renderMind() {
-  const content = document.getElementById("content");
+import { fetchDailyGuidance, isLowEnergy, todayPickedIds } from "./api.js";
 
-  content.innerHTML = `
-    <h2>Mind</h2>
-    <p>Your daily guidance goes here.</p>
-  `;
+export async function renderMind() {
+  try {
+    const lowEnergy = isLowEnergy();
+    const data = await fetchDailyGuidance(lowEnergy);
+
+    const mindSuggestions = data.suggestions.filter(
+      s => s.category === 'mind' && !todayPickedIds.includes(s.id));
+
+    const content = document.getElementById("content");
+    content.innerHTML = `
+      <header id="mind-header">
+        <h1 id="mind-heading"> Mind </h1>
+        <p>Day ${data.day} - ${data.phase}</p>
+      </header>
+      ${mindSuggestions.slice(0, 2).map(s => `
+        <div class="suggestion">
+          <strong>${s.title}</strong>
+          <p>${s.description}</p>
+        </div>
+      `).join('')}      
+    `;
+  }catch (errorObj) {
+      console.error(errorObj);
+  }
 }
