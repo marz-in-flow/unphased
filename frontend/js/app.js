@@ -3,6 +3,7 @@ import { renderToday } from './today.js';
 import { renderMind } from './mind.js';
 import { renderBody } from './body.js';
 import { renderRest } from './rest.js';
+import { isLowEnergy } from './api.js';
 
 document.addEventListener("DOMContentLoaded", () => {
   const profile = localStorage.getItem("cycleProfile");
@@ -27,14 +28,15 @@ function showMainApp(view) {
 }
 
 function showView(view) {
+  const lowEnergy = isLowEnergy();
   if (view === "today") {
     renderToday();
   } else if (view === "mind") {
-    renderMind();
+    renderMind(lowEnergy);
   } else if (view === "body") {
-    renderBody();
+    renderBody(lowEnergy);
   } else if (view === "rest") {
-    renderRest();
+    renderRest(lowEnergy);
   }
 }
 
