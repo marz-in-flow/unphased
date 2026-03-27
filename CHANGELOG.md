@@ -2,6 +2,15 @@
 
 All notable changes to UnPhased will be documented here.
 
+## 2026-03-26 | Phase 2: Frontend
+
+### Added
+- Mind tab screen with filtered suggestions and phase blurb
+- Body tab screen with Nourish and Move sections
+- Rest tab screen with recovery suggestions
+- Shared phaseBlurbs.js with phase-aware descriptions for all tabs
+- todayPickedIds exclusion to prevent duplicate suggestions across tabs
+
 ## 2026-03-26 | Phase 2: Frontend 
 
 ### Added
