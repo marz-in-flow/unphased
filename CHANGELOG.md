@@ -2,8 +2,15 @@
 
 All notable changes to UnPhased will be documented here.
 
+## 2026-03-26 | Phase 2: Frontend 
+
+### Added
+- Low energy toggle with daily auto-reset via localStorage
+- Dual cache system for default and low energy suggestion responses
+- Today screen suggestion tracking for tab deduplication
+- fetchDailyGuidance, isLowEnergy, and setLowEnergy functions in api.js
+
 ## 2026-03-25 | Phase 2: Frontend 
-## Changelog — March 25, 2026
 
 ### Changed
 - Added date-based pseudorandom ordering for daily suggestions in `/today`
@@ -16,7 +23,7 @@ All notable changes to UnPhased will be documented here.
 ## 2026-03-24 | Phase 2: Frontend 
 
 ### Added
-- Today screen with daily guidance rendering
+- Today screen with daily guidance, mode/phase display, and filtered suggestions rendering
 - fetchDailyGuidance function in api.js
 - Centralized API base URL in api.js
 
