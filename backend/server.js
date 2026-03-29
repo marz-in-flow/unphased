@@ -6,8 +6,8 @@
 
 // Load environment variables from .env before any other code runs.
 require("dotenv").config();
-const cors = require("cors");
 const express = require("express");
+const path = require("path");
 
 const { getDailyGuidance, getEffortLevels } = require("./utils/cycleUtils");
 const { Pool } = require("pg");
@@ -19,8 +19,11 @@ const pool = new Pool({
 
 const app = express();
 
+const frontendPath = path.join(__dirname, "../frontend");
+
+app.use(express.static(frontendPath));
+
 app.use(express.json());// Parses incoming JSON request bodies so req.body is usable.
-app.use(cors());
 
 /**
  * GET /health — Confirms server is running.
@@ -36,6 +39,7 @@ app.get("/health", (req, res) => {
  * then filters suggestions by effort level AND phase tag.
  * @returns {Object} { day, phase, mode, cycle_profile, suggestions[] }
  */
+
 app.get("/today", async (req, res) => {
   try {
     // Fetch the most recent cycle profile (MVP assumes single user)
