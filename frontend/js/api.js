@@ -1,4 +1,4 @@
-const API_BASE_URL = "http://localhost:3000";
+const API_BASE_URL = "";
 export let todayPickedIds = [];
 
 export async function postCycleProfile(cycleProfile) {
