@@ -66,6 +66,9 @@ unphased/
 └── README.md
 ```
 
+## Design Overview
+[Design Overview](./docs/design-overview.md) outlining the primary design artifacts for the Phase 1 MVP.
+
 ## Getting Started (In Progress)
 
 Backend setup and database integration complete. Frontend implementation in progress.
