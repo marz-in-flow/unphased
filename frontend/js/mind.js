@@ -14,10 +14,11 @@ export async function renderMind() {
 
     const content = document.getElementById("content");
     content.innerHTML = `
-      <header id="mind-header">
-        <h2 id="mind-heading"> Mind </h2>
-        <p>Day ${data.day} - ${data.phase}</p>
+      <header class="screen-header">
+        <h2 class="screen-title">Mind</h2>
+        <p class="cycle-info">Day ${data.day} · ${data.phase}</p>
       </header>
+
       <p class="phase-blurb">${blurb}</p>
       ${mindSuggestions.slice(0, 2).map(s => `
         <div class="suggestion-card">

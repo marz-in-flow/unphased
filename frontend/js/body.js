@@ -16,10 +16,12 @@ export async function renderBody() {
     
     const content = document.getElementById("content");
     content.innerHTML = `
-      <header id="body-header">
-        <h2 id="body-heading">Body</h2>
-        <p>Day ${data.day} - ${data.phase}</p>
+      <header class="screen-header">
+        <h2 class="screen-title">Body</h2>
+        <p class="cycle-info">Day ${data.day} · ${data.phase}</p>
       </header>
+
+      
       <p class="phase-blurb">${blurb}</p>
       <section id="nourish-section">
         <h3 id=nourish-heading>Nourish</h3>

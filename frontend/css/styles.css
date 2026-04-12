@@ -12,6 +12,8 @@
   /* Surface colors */
   --bg-surface: rgba(255, 255, 255, 0.55);
 
+  --accent-pink: #c47a8c; 
+
 }
 
 body {
@@ -66,95 +68,30 @@ body {
   color: var(--text-primary);
 }
 
-.mode-restore .nav-tab.active {
-  color: var(--restore);
-  font-weight: 600;
+.energy-toggle {
+  background: var(--bg-surface);
+  border-radius: 12px;
+  padding: 1rem;
+  margin-bottom: 1.5rem;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-.mode-build .nav-tab.active {
-  color: var(--build);
-  font-weight: 600;
+.energy-toggle .form-check-input {
+  width: 3rem;
+  height: 1.5rem;
+  cursor: pointer;
 }
 
-.mode-peak .nav-tab.active {
-  color: var(--peak);
-  font-weight: 600;
+.energy-toggle .form-check-input:checked {
+  background-color: var(--accent-pink);
+  border-color: var(--accent-pink);
 }
 
-.mode-protect .nav-tab.active {
-  color: var(--protect);
-  font-weight: 600;
-}
-
-
-.mode-title {
-  font-size: 2.2rem;
-  font-weight: 700;
-  margin: 0;
-  text-transform: uppercase;
-  letter-spacing: 2px;
-}
-
-/* Mode-specific gradients */
-.mode-restore {
-  background: linear-gradient(
-    180deg,
-    #f4e4e0 0%,
-    #e8d0d0 30%,
-    #d8c0c8 60%,
-    #c8b8c8 100%
-  );
-}
-
-.mode-build {
-  background: linear-gradient(
-    180deg,
-    #f8e8d0 0%,
-    #f0d8b8 25%,
-    #d8c8c0 50%,
-    #c0c8d8 75%,
-    #a8b8d0 100%
-  );
-}
-
-.mode-peak {
-  background: linear-gradient(
-    180deg,
-    #f5e6d3 0%,
-    #e8d4c4 20%,
-    #d4c4d4 50%,
-    #c4c4e4 80%,
-    #b4c4d4 100%
-  );
-}
-
-.mode-protect {
-  background: linear-gradient(
-    180deg,
-    #e8d4b8 0%,
-    #d8c8b8 15%,
-    #c8bcc0 30%,
-    #a8b0c0 50%,
-    #8898b0 70%,
-    #7888a8 100%
-  );
-}
-
-/* Mode-specific title colors */
-.mode-restore .mode-title {
-  color: var(--restore);
-}
-
-.mode-build .mode-title {
-  color: var(--build);
-}
-
-.mode-peak .mode-title {
-  color: var(--peak);
-}
-
-.mode-protect .mode-title {
-  color: var(--protect);
+.energy-toggle .form-check-label {
+  margin-left: 0.5rem;
+  color: var(--text-primary);
 }
 
 .onboarding-screen {
@@ -210,6 +147,153 @@ body {
   margin-top: 1rem;
   text-align: center;
   font-size: 0.9rem;
+}
+
+.today-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.today-header-text {
+  text-align: left;
+}
+
+.today-header-icon {
+  font-size: 2.5rem;
+}
+
+
+.screen-header {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.screen-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.cycle-info {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  margin-top: 0.25rem;
+}
+
+.phase-blurb {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+  padding: 0 1rem;
+  background: none;
+  font-style: italic;
+}
+
+
+.mode-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* Mode-specific gradients */
+.mode-restore {
+  background: linear-gradient(
+    180deg,
+    #f4e0e0 0%,
+    #e8c8c8 25%,
+    #dcb0b0 50%,
+    #d09898 75%,
+    #c48888 100%
+  );
+}
+
+.mode-build {
+  background: linear-gradient(
+    180deg,
+    #fff8e8 0%,
+    #ffe8c0 20%,
+    #f8d0a0 40%,
+    #e8b8a0 60%,
+    #d8a8a0 80%,
+    #c89898 100%
+  );
+}
+
+.mode-peak {
+  background: linear-gradient(
+    180deg,
+    #f5e6d3 0%,
+    #e8d4c4 20%,
+    #d4c4d4 50%,
+    #c4c4e4 80%,
+    #b4c4d4 100%
+  );
+}
+
+.mode-protect {
+  background: linear-gradient(
+    180deg,
+    #ece8f4 0%,
+    #e0d4ec 20%,
+    #d4c8e8 35%,
+    #c8c0e0 50%,
+    #c0acd4 70%,
+    #b89cc8 100%
+  );
+}
+
+/* Mode-specific title colors */
+.mode-restore .mode-title {
+  color: var(--restore);
+}
+
+.mode-build .mode-title {
+  color: var(--build);
+}
+
+.mode-peak .mode-title {
+  color: var(--peak);
+}
+
+.mode-protect .mode-title {
+  color: var(--protect);
+}
+
+.mode-restore .nav-tab.active {
+  color: var(--restore);
+  font-weight: 600;
+  background: var(--bg-surface);
+  border-radius: 8px;
+}
+
+.mode-build .nav-tab.active {
+  color: var(--build);
+  font-weight: 600;
+  background: var(--bg-surface);
+  border-radius: 8px;
+}
+
+.mode-peak .nav-tab.active {
+  color: var(--peak);
+  font-weight: 600;
+  background: var(--bg-surface);
+  border-radius: 8px;
+}
+
+.mode-protect .nav-tab.active {
+  color: var(--protect);
+  font-weight: 600;
+  background: var(--bg-surface);
+  border-radius: 8px;
 }
 
 .suggestion-card {
