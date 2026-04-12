@@ -4,6 +4,7 @@ export async function renderToday() {
   try {
     const lowEnergy = isLowEnergy();
     const data = await fetchDailyGuidance(lowEnergy);
+    document.getElementById("app").className = `mode-${data.mode.toLowerCase()}`;
 
     const mind = data.suggestions.find(s => s.category === 'mind');
     const body = data.suggestions.find(s => s.category === 'move' || s.category === 'nourish');
@@ -18,7 +19,7 @@ export async function renderToday() {
     const content = document.getElementById("content");
     content.innerHTML = `
       <header>
-        <h1>${data.mode}</h1>
+        <h1 class="mode-title">${data.mode}</h1>
         <p>Day ${data.day} - ${data.phase}</p>
       </header>
       
@@ -28,28 +29,28 @@ export async function renderToday() {
             <input type="checkbox" id="low-energy-toggle" ${lowEnergy ? 'checked' : ''} />
             Low energy day?
           </label>
-      </section>
+        </section>
         
         <section class = "suggestions">
           ${mind ? `
-            <div class="suggestion">
+            <div class="suggestion-card">
               <span>🧠</span>
-              <strong>${mind.title}</strong>
-              <p>${mind.description}</p>
+              <h3 class="suggestion-title">${mind.title}</h3>
+              <p class="suggestion-text">${mind.description}</p>
             </div>
           ` : ''}
           ${body ? `
-            <div class="suggestion">
+            <div class="suggestion-card">
               <span>🌿</span>
-              <strong>${body.title}</strong>
-              <p>${body.description}</p>
+              <h3 class="suggestion-title">${body.title}</h3>
+              <p class="suggestion-text">${body.description}</p>
             </div>
           ` : ''}
           ${rest ? `
-            <div class="suggestion">
+            <div class="suggestion-card">
               <span>🧘</span>
-              <strong>${rest.title}</strong>
-              <p>${rest.description}</p>
+              <h3 class="suggestion-title">${rest.title}</h3>
+              <p class ="suggestion-text">${rest.description}</p>
             </div>
           ` : ''}
         </section>

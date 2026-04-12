@@ -5,6 +5,8 @@ export async function renderRest() {
   try {
     const lowEnergy = isLowEnergy();
     const data = await fetchDailyGuidance(lowEnergy);
+    document.getElementById("app").className = `mode-${data.mode.toLowerCase()}`;
+
     const blurb = phaseBlurbs.rest[data.phase];
     
     const restSuggestions = data.suggestions.filter(
@@ -18,9 +20,9 @@ export async function renderRest() {
       </header>
       <p class="phase-blurb">${blurb}</p>
       ${restSuggestions.slice(0, 2).map(s => `
-        <div class="suggestion">
-          <strong>${s.title}</strong>
-          <p>${s.description}</p>
+        <div class="suggestion-card">
+          <h3 class="suggestion-title">${s.title}</h3>
+          <p class="suggestion-text">${s.description}</p>
         </div>
       `).join('')}      
     `;

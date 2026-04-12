@@ -5,6 +5,8 @@ export async function renderMind() {
   try {
     const lowEnergy = isLowEnergy();
     const data = await fetchDailyGuidance(lowEnergy);
+    document.getElementById("app").className = `mode-${data.mode.toLowerCase()}`;
+    
     const blurb = phaseBlurbs.mind[data.phase];
 
     const mindSuggestions = data.suggestions.filter(
@@ -18,9 +20,9 @@ export async function renderMind() {
       </header>
       <p class="phase-blurb">${blurb}</p>
       ${mindSuggestions.slice(0, 2).map(s => `
-        <div class="suggestion">
-          <strong>${s.title}</strong>
-          <p>${s.description}</p>
+        <div class="suggestion-card">
+          <h3 class="suggestion-title">${s.title}</h3>
+          <p class="suggestion-text">${s.description}</p>
         </div>
       `).join('')}      
     `;
