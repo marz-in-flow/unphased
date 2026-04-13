@@ -1,3 +1,6 @@
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js');
+}
 import { renderOnboarding } from './onboarding.js';
 import { renderToday } from './today.js';
 import { renderMind } from './mind.js';
