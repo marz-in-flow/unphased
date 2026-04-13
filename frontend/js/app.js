@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function showOnboarding() {
   document.getElementById("bottom-nav").style.display = "none";
+  document.body.className = "mode-onboarding";
   renderOnboarding(() => {
     showMainApp("today");
   });
@@ -29,6 +30,12 @@ function showMainApp(view) {
 
 function showView(view) {
   const lowEnergy = isLowEnergy();
+
+  document.querySelectorAll('.nav-tab').forEach(tab => {
+    tab.classList.remove('active');
+  });
+  document.querySelector(`[data-tab="${view}"]`).classList.add('active');
+
   if (view === "today") {
     renderToday();
   } else if (view === "mind") {

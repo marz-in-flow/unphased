@@ -5,6 +5,8 @@ export async function renderBody() {
   try {
     const lowEnergy = isLowEnergy();
     const data = await fetchDailyGuidance(lowEnergy);
+    document.body.className = `mode-${data.mode.toLowerCase()}`;
+
     const blurb = phaseBlurbs.body[data.phase];
 
     const moveSuggestions = data.suggestions.filter(
@@ -14,17 +16,19 @@ export async function renderBody() {
     
     const content = document.getElementById("content");
     content.innerHTML = `
-      <header id="body-header">
-        <h2 id="body-heading">Body</h2>
-        <p>Day ${data.day} - ${data.phase}</p>
+      <header class="screen-header">
+        <h2 class="screen-title">Body</h2>
+        <p class="cycle-info">Day ${data.day} · ${data.phase}</p>
       </header>
+
+      
       <p class="phase-blurb">${blurb}</p>
       <section id="nourish-section">
         <h3 id=nourish-heading>Nourish</h3>
         ${nourishSuggestions.slice(0, 2).map(s => `
-          <div class="suggestion">
-            <strong>${s.title}</strong>
-            <p>${s.description}</p>
+          <div class="suggestion-card">
+            <h3 class="suggestion-title">${s.title}</h3>
+            <p class="suggestion-text">${s.description}</p>
           </div>
         `).join('')}
       </section>
@@ -32,9 +36,9 @@ export async function renderBody() {
       <section id="move-section">
         <h3 id="move-heading">Move</h3>
         ${moveSuggestions.slice(0, 2).map(s => `
-          <div class="suggestion">
-            <strong>${s.title}</strong>
-            <p>${s.description}</p>
+          <div class="suggestion-card">
+            <h3 class="suggestion-title">${s.title}</h3>
+            <p class="suggestion-text">${s.description}</p>
           </div>
         `).join('')}            
     `;

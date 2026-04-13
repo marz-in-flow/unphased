@@ -7,7 +7,7 @@ export function renderOnboarding(onComplete) {
     <section class="onboarding-screen">
       <header class="onboarding-header">
         <img
-          src="images/unphased-logo-v1.png"
+          src="images/unphased-logo-v3.png"
           alt="unPhased logo"
           class="onboarding-logo"
         />
