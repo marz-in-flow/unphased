@@ -17,6 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function showOnboarding() {
   document.getElementById("bottom-nav").style.display = "none";
+  document.body.className = "mode-onboarding";
   renderOnboarding(() => {
     showMainApp("today");
   });

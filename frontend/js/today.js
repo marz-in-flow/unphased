@@ -4,7 +4,7 @@ export async function renderToday() {
   try {
     const lowEnergy = isLowEnergy();
     const data = await fetchDailyGuidance(lowEnergy);
-    document.getElementById("app").className = `mode-${data.mode.toLowerCase()}`;
+    document.body.className = `mode-${data.mode.toLowerCase()}`;
 
     const mind = data.suggestions.find(s => s.category === 'mind');
     const body = data.suggestions.find(s => s.category === 'move' || s.category === 'nourish');

@@ -5,7 +5,7 @@ export async function renderRest() {
   try {
     const lowEnergy = isLowEnergy();
     const data = await fetchDailyGuidance(lowEnergy);
-    document.getElementById("app").className = `mode-${data.mode.toLowerCase()}`;
+    document.body.className = `mode-${data.mode.toLowerCase()}`;
 
     const blurb = phaseBlurbs.rest[data.phase];
     
