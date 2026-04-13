@@ -2,6 +2,26 @@
 
 All notable changes to UnPhased will be documented here.
 
+## 2026-04-13 | Phase 2: Frontend Polish  
+
+### Added
+- Mode-based visual theming with gradient backgrounds per phase
+- CSS variables for mode accent colors and UI surfaces
+- Moon icon per phase on Today screen header
+- Frosted glass effect on suggestion cards and energy toggle
+- Active tab highlighting with mode-colored background
+- Onboarding gradient using full cycle color palette
+- iOS safe area handling for bottom navigation
+- Backdrop blur effect on bottom nav
+- PWA support with manifest.json and service worker
+- App icons for home screen installation
+
+### Changed
+- Moved gradient backgrounds from #app to body for full viewport coverage
+- Updated energy toggle to match mode accent color
+- Refined gradients for Build (spring sunrise) and Protect (lavender dusk)
+
+
 ## 2026-03-26 | Phase 2: Frontend
 
 ### Added
