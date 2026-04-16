@@ -33,8 +33,8 @@ export async function fetchDailyGuidance(lowEnergy = false) {
   if(!lowEnergy && cachedDefault) return cachedDefault;
   
   const url = lowEnergy 
-    ? `${API_BASE_URL}/today?low_energy=true`
-    : `${API_BASE_URL}/today`;
+    ? `${API_BASE_URL}/daily-guidance?low_energy=true`
+    : `${API_BASE_URL}/daily-guidance`;
   
   const response = await fetch(url);
   

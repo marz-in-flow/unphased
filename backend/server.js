@@ -40,7 +40,7 @@ app.get("/health", (req, res) => {
  * @returns {Object} { day, phase, mode, cycle_profile, suggestions[] }
  */
 
-app.get("/today", async (req, res) => {
+app.get("/daily-guidance", async (req, res) => {
   try {
     // Fetch the most recent cycle profile (MVP assumes single user)
     const profileResult = await pool.query(
