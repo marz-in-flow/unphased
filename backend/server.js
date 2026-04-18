@@ -4,98 +4,49 @@
  * Business logic (phase calculation, mode mapping) is delegated to cycleUtils.js.
  */
 
-// Load environment variables from .env before any other code runs.
+// ---------- Environment variables ----------
 require("dotenv").config();
+const PORT = process.env.PORT || 3000;
+
+// ---------- Imports ----------
 const express = require("express");
+const session = require('express-session')
 const path = require("path");
-
-const { getDailyGuidance, getEffortLevels } = require("./utils/cycleUtils");
 const { Pool } = require("pg");
+const { getDailyGuidance, getEffortLevels } = require("./utils/cycleUtils");
+const { config } = require("dotenv");
 
-// Connection pool for efficient database query management
+
+// ---------- App and database setup ----------
+const app = express();
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
 });
 
-const app = express();
-
 const frontendPath = path.join(__dirname, "../frontend");
 
+// ---------- Middleware ----------
 app.use(express.static(frontendPath));
+app.use(express.json());
+app.use(session({
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    secure: false,
+    maxAge: 1000 * 60 * 60 * 24 * 7
+  }
+}));
 
-app.use(express.json());// Parses incoming JSON request bodies so req.body is usable.
-
+// ---------- Routes ----------
 /**
  * GET /health — Confirms server is running.
  * @returns {Object} { status, service }
  */
 app.get("/health", (req, res) => {
   res.json({ status: "ok", service: "unphased-backend" });
-});
-
-/**
- * GET /today — Returns daily guidance and filtered suggestions.
- * Fetches most recent cycle profile, computes phase/mode,
- * then filters suggestions by effort level AND phase tag.
- * @returns {Object} { day, phase, mode, cycle_profile, suggestions[] }
- */
-
-app.get("/daily-guidance", async (req, res) => {
-  try {
-    // Fetch the most recent cycle profile (MVP assumes single user)
-    const profileResult = await pool.query(
-      "SELECT * FROM cycle_profiles ORDER BY id DESC LIMIT 1"
-    );
-
-    // Return 404 if no profile exists yet
-    if (!profileResult.rows[0]) {
-      return res.status(404).json({
-        error: "No cycle profile found. Please enter your cycle information."
-      });
-    }
-
-    const cycleStartDate = profileResult.rows[0].cycle_start_date;
-    const cycleLengthDays = profileResult.rows[0].cycle_length_days;
-    
-    const dailyGuidance = getDailyGuidance(cycleStartDate, cycleLengthDays);
-    const phase = dailyGuidance.phase;
-    const mode = dailyGuidance.mode;
-    
-    let allowedEffortLevels = getEffortLevels(mode);
-
-    //adjusts allowed effort levels based on low energy toggle
-    if (req.query.low_energy === "true") {
-      allowedEffortLevels = ["low"];
-    }
-    
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const todayKey = String(today.getTime());
-
-    // ANY($1) checks effort_level against the allowedEffortLevels array.
-    // Both conditions must be met: effort matches mode AND phase matches or is NULL
-    const suggestionsResult = await pool.query(
-      `
-      SELECT id, title, description, effort_level, phase_tag, category
-      FROM suggestions
-      WHERE effort_level = ANY($1)
-        AND (phase_tag = $2 OR phase_tag IS NULL)
-      ORDER BY md5($3 || id::text)
-    `,
-    [allowedEffortLevels, phase, todayKey]
-  );
-
-    res.json({
-      day: dailyGuidance.day,
-      phase: dailyGuidance.phase,
-      mode: dailyGuidance.mode,
-      cycle_profile: profileResult.rows[0],
-      suggestions: suggestionsResult.rows,
-    }); 
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
 });
 
 /**
@@ -179,9 +130,72 @@ app.post("/cycle-profile", async (req, res) => {
   }
 });
 
-// Use PORT from environment variable (for deployment) or default to 3000 locally
-const PORT = process.env.PORT || 3000;
+/**
+ * GET /daily-guidance — Returns daily guidance and filtered suggestions.
+ * Fetches most recent cycle profile, computes phase/mode,
+ * then filters suggestions by effort level AND phase tag.
+ * @returns {Object} { day, phase, mode, cycle_profile, suggestions[] }
+ */
 
+app.get("/daily-guidance", async (req, res) => {
+  try {
+    // Fetch the most recent cycle profile (MVP assumes single user)
+    const profileResult = await pool.query(
+      "SELECT * FROM cycle_profiles ORDER BY id DESC LIMIT 1"
+    );
+    
+    // Return 404 if no profile exists yet
+    if (!profileResult.rows[0]) {
+      return res.status(404).json({
+        error: "No cycle profile found. Please enter your cycle information."
+      });
+    }
+
+    const cycleStartDate = profileResult.rows[0].cycle_start_date;
+    const cycleLengthDays = profileResult.rows[0].cycle_length_days;
+    
+    const dailyGuidance = getDailyGuidance(cycleStartDate, cycleLengthDays);
+    const phase = dailyGuidance.phase;
+    const mode = dailyGuidance.mode;
+    
+    let allowedEffortLevels = getEffortLevels(mode);
+
+    //adjusts allowed effort levels based on low energy toggle
+    if (req.query.low_energy === "true") {
+      allowedEffortLevels = ["low"];
+    }
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const todayKey = String(today.getTime());
+
+    // ANY($1) checks effort_level against the allowedEffortLevels array.
+    // Both conditions must be met: effort matches mode AND phase matches or is NULL
+    const suggestionsResult = await pool.query(
+      `
+      SELECT id, title, description, effort_level, phase_tag, category
+      FROM suggestions
+      WHERE effort_level = ANY($1)
+        AND (phase_tag = $2 OR phase_tag IS NULL)
+      ORDER BY md5($3 || id::text)
+    `,
+    [allowedEffortLevels, phase, todayKey]
+  );
+
+    res.json({
+      day: dailyGuidance.day,
+      phase: dailyGuidance.phase,
+      mode: dailyGuidance.mode,
+      cycle_profile: profileResult.rows[0],
+      suggestions: suggestionsResult.rows,
+    }); 
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ---------- Server start ----------
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
