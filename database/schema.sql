@@ -1,19 +1,48 @@
--- UnPhased Phase 1 Schema
+DROP TABLE IF EXISTS cycle_logs CASCADE;
+DROP TABLE IF EXISTS cycle_profiles CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+DROP TABLE IF EXISTS suggestions CASCADE;
 
-CREATE TABLE IF NOT EXISTS cycle_profiles (
+CREATE TABLE users (
   id SERIAL PRIMARY KEY,
-  cycle_start_date DATE NOT NULL,
-  cycle_length_days INTEGER NOT NULL CHECK (cycle_length_days BETWEEN 20 AND 45),
-  period_length_days INTEGER CHECK (period_length_days BETWEEN 2 AND 10),
-  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+  email TEXT NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CHECK (char_length(trim(email)) > 0)
 );
 
-CREATE TABLE IF NOT EXISTS suggestions (
+CREATE TABLE cycle_profiles (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL UNIQUE,
+  cycle_start_date DATE NOT NULL,
+  cycle_length_days INTEGER NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_cycle_profiles_user
+    FOREIGN KEY (user_id)
+    REFERENCES users(id)
+    ON DELETE CASCADE,
+  CONSTRAINT chk_cycle_length
+    CHECK (cycle_length_days BETWEEN 21 AND 40)
+);
+
+CREATE TABLE cycle_logs (
+  id SERIAL PRIMARY KEY,
+  user_id INTEGER NOT NULL,
+  period_start_date DATE NOT NULL,
+  notes TEXT,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT fk_cycle_logs_user
+    FOREIGN KEY (user_id)
+    REFERENCES users(id)
+    ON DELETE CASCADE
+);
+
+CREATE TABLE suggestions (
   id SERIAL PRIMARY KEY,
   title TEXT NOT NULL,
   description TEXT,
   category TEXT NOT NULL CHECK (category in ('mind', 'move', 'rest', 'nourish')),
   effort_level TEXT NOT NULL CHECK (effort_level IN ('low','medium','high')),
   phase_tag TEXT CHECK (phase_tag IN ('menstrual','follicular','ovulatory','luteal')),
-  created_at TIMESTAMP NOT NULL DEFAULT NOW()
+  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
