@@ -10,7 +10,8 @@ const PORT = process.env.PORT || 3000;
 
 // ---------- Imports ----------
 const express = require("express");
-const session = require('express-session')
+const session = require("express-session")
+const bcrypt = require("bcrypt");
 const path = require("path");
 const { Pool } = require("pg");
 const { getDailyGuidance, getEffortLevels } = require("./utils/cycleUtils");
@@ -35,6 +36,7 @@ app.use(session({
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
+    sameSite: "lax",
     secure: false,
     maxAge: 1000 * 60 * 60 * 24 * 7
   }
@@ -61,6 +63,47 @@ app.get("/db-test", async (req, res) => {
     res.status(500).json({ ok: false, error: err.message });
   }
 });
+
+app.post("/register", async(req, res) => {
+  const { email, password } = req.body;
+  const errors = [];
+  
+  if (!email || !password) errors.push("Email and password are required");
+  if (password.length < 8) errors.push("Password must be at least 8 characters");
+  if (errors.length > 0 ) return res.status(400).json({ errors });
+
+  const normalizedEmail = email.trim().toLowerCase();
+  const checkEmailQuery = `
+    SELECT EXISTS(SELECT 1 FROM users WHERE email = $1)
+    `;
+
+  try {
+    const result = await pool.query(checkEmailQuery, [normalizedEmail]);
+    const emailExists = result.rows[0].exists;
+
+    if(emailExists) {
+      return res.status(409).json({
+        error: "An account with that email already exists"
+      })
+    }
+
+    const hash = await bcrypt.hash(password, 10);
+    
+    const insertUserQuery = `
+      INSERT INTO users(email, password_hash)
+      VALUES ($1, $2)
+    `;
+    
+    await pool.query(insertUserQuery, [normalizedEmail, hash]);
+
+    res.status(201).json({
+      message: "Account registered"
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 
 /**
  * POST /cycle-profile — Saves user's cycle configuration.
