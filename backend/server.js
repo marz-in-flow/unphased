@@ -81,11 +81,7 @@ app.post("/register", async(req, res) => {
     const result = await pool.query(checkEmailQuery, [normalizedEmail]);
     const emailExists = result.rows[0].exists;
 
-    if(emailExists) {
-      return res.status(409).json({
-        error: "An account with that email already exists"
-      })
-    }
+    if(emailExists) return res.status(409).json({ error: "An account with that email already exists"});
 
     const hash = await bcrypt.hash(password, 10);
     
@@ -97,13 +93,52 @@ app.post("/register", async(req, res) => {
     await pool.query(insertUserQuery, [normalizedEmail, hash]);
 
     res.status(201).json({
-      message: "Account registered"
+      message: "Account created successfully"
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error(err);
+    res.status(500).json({ error: "Something went wrong" });
   }
 });
 
+app.post("/login", async(req, res) => {
+  const { email, password } = req.body;
+
+  if (!email || !password) return res.status(400).json({ error: "Email and password required" });
+
+  const normalizedEmail = email.trim().toLowerCase();
+  try {
+    const loginQuery = `
+      SELECT id, password_hash FROM users WHERE email = $1
+      `;
+    const result = await pool.query(loginQuery, [normalizedEmail]);
+    const user = result.rows[0];
+    
+    if (!user) return res.status(401).json({ error: "Invalid credentials" });
+    
+    const match = await bcrypt.compare(password, user.password_hash);
+    if (!match) return res.status(401).json({ error: "Invalid credentials" });
+    
+    req.session.regenerate((err) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Something went wrong" });
+      }
+      req.session.userId = user.id;
+      req.session.save((err) => {
+        if (err) {
+          console.error(err);
+          return res.status(500).json({ error: "Something went wrong" });
+        }
+        res.status(200).json({ message: "Logged in" });
+      });
+    });
+  
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Something went wrong" });
+  }
+});
 
 /**
  * POST /cycle-profile — Saves user's cycle configuration.
