@@ -140,6 +140,18 @@ app.post("/login", async(req, res) => {
   }
 });
 
+app.post("/logout", (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({error: "Something went wrong"});
+    }
+    res.clearCookie("connect.sid");
+    res.status(200).json({message: "Logged out"});
+  })
+});
+
+
 /**
  * POST /cycle-profile — Saves user's cycle configuration.
  * Uses RETURNING * to send inserted row back without a separate SELECT.
