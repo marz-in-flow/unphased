@@ -11,7 +11,7 @@ const PORT = process.env.PORT || 3000;
 // ---------- Imports ----------
 const express = require("express");
 const session = require("express-session")
-const bcrypt = require("bcrypt");
+const argon2 = require("argon2");
 const path = require("path");
 const { Pool } = require("pg");
 const { getDailyGuidance, getEffortLevels } = require("./utils/cycleUtils");
@@ -83,7 +83,7 @@ app.post("/register", async(req, res) => {
 
     if(emailExists) return res.status(409).json({ error: "An account with that email already exists"});
 
-    const hash = await bcrypt.hash(password, 10);
+    const hash = await argon2.hash(password);
     
     const insertUserQuery = `
       INSERT INTO users(email, password_hash)
@@ -116,7 +116,7 @@ app.post("/login", async(req, res) => {
     
     if (!user) return res.status(401).json({ error: "Invalid credentials" });
     
-    const match = await bcrypt.compare(password, user.password_hash);
+    const match = await argon2.verify(user.password_hash, password);
     if (!match) return res.status(401).json({ error: "Invalid credentials" });
     
     req.session.regenerate((err) => {
