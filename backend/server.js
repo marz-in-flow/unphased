@@ -42,6 +42,13 @@ app.use(session({
   }
 }));
 
+function requireAuth(req, res, next) {
+  if (!req.session.userId) {
+    return res.status(401).JSON({ error: "Unauthorized" });
+  }
+  
+  next();
+ }
 // ---------- Routes ----------
 /**
  * GET /health — Confirms server is running.
@@ -160,7 +167,7 @@ app.post("/logout", (req, res) => {
  * @param {number} [req.body.period_length_days] - Optional
  * @returns {201} { message, data } or {400} if validation fails or {500} if a db error occurs
  */
-app.post("/cycle-profile", async (req, res) => {
+app.post("/cycle-profile", requireAuth, async (req, res) => {
   const { cycleStartDate, cycleLengthDays, periodLengthDays } = req.body;
 
   if (!cycleStartDate || cycleLengthDays === undefined) {
@@ -227,7 +234,7 @@ app.post("/cycle-profile", async (req, res) => {
  * @returns {Object} { day, phase, mode, cycle_profile, suggestions[] }
  */
 
-app.get("/daily-guidance", async (req, res) => {
+app.get("/daily-guidance", requireAuth, async (req, res) => {
   try {
     // Fetch the most recent cycle profile (MVP assumes single user)
     const profileResult = await pool.query(
