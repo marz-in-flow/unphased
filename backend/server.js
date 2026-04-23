@@ -168,7 +168,7 @@ app.post("/logout", (req, res) => {
  * @returns {201} { message, data } or {400} if validation fails or {500} if a db error occurs
  */
 app.post("/cycle-profile", requireAuth, async (req, res) => {
-  const { cycleStartDate, cycleLengthDays, periodLengthDays } = req.body;
+  const { cycleStartDate, cycleLengthDays } = req.body;
 
   if (!cycleStartDate || cycleLengthDays === undefined) {
     return res.status(400).json({
@@ -210,12 +210,12 @@ app.post("/cycle-profile", requireAuth, async (req, res) => {
 
   try {
     const query = `
-      INSERT INTO cycle_profiles (cycle_start_date, cycle_length_days, period_length_days)
+      INSERT INTO cycle_profiles (user_id, cycle_start_date, cycle_length_days)
       VALUES ($1, $2, $3)
       RETURNING *
     `;
 
-    const values = [cycleStartDate, cycleLength, periodLengthDays ?? null];
+    const values = [req.session.userId, cycleStartDate, cycleLength];
     const result = await pool.query(query, values);
 
     res.status(201).json({
@@ -235,11 +235,13 @@ app.post("/cycle-profile", requireAuth, async (req, res) => {
  */
 
 app.get("/daily-guidance", requireAuth, async (req, res) => {
+  const userId = req.session.userId;
   try {
-    // Fetch the most recent cycle profile (MVP assumes single user)
     const profileResult = await pool.query(
-      "SELECT * FROM cycle_profiles ORDER BY id DESC LIMIT 1"
-    );
+      `SELECT cycle_start_date, cycle_length_days 
+      FROM cycle_profiles 
+      WHERE user_id = $1 `,
+      [userId]);
     
     // Return 404 if no profile exists yet
     if (!profileResult.rows[0]) {
@@ -276,9 +278,8 @@ app.get("/daily-guidance", requireAuth, async (req, res) => {
       WHERE effort_level = ANY($1)
         AND (phase_tag = $2 OR phase_tag IS NULL)
       ORDER BY md5($3 || id::text)
-    `,
-    [allowedEffortLevels, phase, todayKey]
-  );
+      `,
+    [allowedEffortLevels, phase, todayKey]);
 
     res.json({
       day: dailyGuidance.day,
