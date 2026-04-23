@@ -9,14 +9,16 @@
  * @returns {number} Current cycle day (1-based)
  */
 
-function getCycleDay(cycleStartDate) {
+function getCycleDay(cycleStartDate, cycleLengthDays) {
     const start = new Date(cycleStartDate);
     const today = new Date();
     start.setHours(0, 0, 0, 0);
     today.setHours(0, 0, 0, 0);
+    
     const diffMs = today - start; //JS converts Date objects into internal timestamp values (milliseconds) first 
-    const diffDays = diffMs / (1000 * 60 * 60 * 24);
-    return Math.round(diffDays + 1);
+    const daysSinceStart = diffMs / (1000 * 60 * 60 * 24);
+    const currentCycleDay  = daysSinceStart % cycleLengthDays;
+    return Math.round(currentCycleDay + 1);
 }
 
 /**
@@ -83,7 +85,7 @@ function getEffortLevels(mode) {
  * @returns {Object} { day, phase, mode }
  */
 function getDailyGuidance(cycleStartDay, cycleLengthDays) {
-    const day = getCycleDay(cycleStartDay);
+    const day = getCycleDay(cycleStartDay, cycleLengthDays);
     const phase = getCyclePhase(day, cycleLengthDays);
     const mode = getMode(phase);
 
