@@ -2,6 +2,23 @@
 
 All notable changes to UnPhased will be documented here.
 
+## 2026-04-22 | Auth Integration
+
+### Added
+- Session-based authentication with express-session
+- `users` table with argon2id password hashing
+- `POST /register`, `POST /login`, `POST /logout` endpoints
+- `requireAuth` middleware protecting `/cycle-profile` and `/daily-guidance`
+- `user_id` foreign key on `cycle_profiles` scoping data per user
+
+### Changed
+- `getCycleDay` now accepts `cycleLengthDays` and wraps past cycle length via modulo
+- `GET /daily-guidance` filters profile by authenticated user instead of pulling most recent
+
+### Removed
+- `period_length_days` column and references (deferred to tracker phase)
+- bcrypt dependency (replaced with argon2)
+
 ## 2026-04-13 | Phase 2: Frontend Polish  
 
 ### Added
