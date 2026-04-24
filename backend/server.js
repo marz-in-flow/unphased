@@ -236,6 +236,7 @@ app.post("/cycle-profile", requireAuth, async (req, res) => {
 
 app.get("/daily-guidance", requireAuth, async (req, res) => {
   const userId = req.session.userId;
+ 
   try {
     const profileResult = await pool.query(
       `SELECT cycle_start_date, cycle_length_days 
@@ -277,9 +278,9 @@ app.get("/daily-guidance", requireAuth, async (req, res) => {
       FROM suggestions
       WHERE effort_level = ANY($1)
         AND (phase_tag = $2 OR phase_tag IS NULL)
-      ORDER BY md5($3 || id::text)
+      ORDER BY md5($3 || $4 || id::text)
       `,
-    [allowedEffortLevels, phase, todayKey]);
+    [allowedEffortLevels, phase, todayKey, userId]);
 
     res.json({
       day: dailyGuidance.day,
