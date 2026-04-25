@@ -49,6 +49,7 @@ function requireAuth(req, res, next) {
   
   next();
  }
+
 // ---------- Routes ----------
 /**
  * GET /health — Confirms server is running.
@@ -68,6 +69,31 @@ app.get("/db-test", async (req, res) => {
     res.json({ ok: true });
   } catch (err) {
     res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
+app.get("/me", async(req, res) => {
+  const userId = req.session.userId;
+  
+  if (!userId) {
+    return res.status(401).json({authenticated: false});
+  }
+
+  const hasProfileQuery = `
+   SELECT EXISTS (SELECT 1 FROM cycle_profiles WHERE user_id = $1) LIMIT 1
+  `;
+
+  try {
+    const result = await pool.query(hasProfileQuery, [userId]);
+    const hasProfile = result.rows[0].exists;
+    
+    return res.status(200).json({
+      authenticated: true,
+      hasProfile
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(200).json({ error: "Something went wrong" });
   }
 });
 
@@ -99,9 +125,7 @@ app.post("/register", async(req, res) => {
     
     await pool.query(insertUserQuery, [normalizedEmail, hash]);
 
-    res.status(201).json({
-      message: "Account created successfully"
-    });
+    res.status(201).json({message: "Account created successfully"});
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Something went wrong" });
