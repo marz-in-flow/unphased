@@ -1,4 +1,4 @@
-import { postCycleProfile } from "./api.js";
+import { postCycleProfile } from "../api.js";
 
 export function renderOnboarding(onComplete) {
   const content = document.getElementById("content");
