@@ -1,10 +1,27 @@
 const API_BASE_URL = "";
 export let todayPickedIds = [];
 
+export async function postLogin({ email, password }) {
+  const response = await fetch(`${API_BASE_URL}/login`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json"},
+    credentials: "include",
+    body: JSON.stringify({ email, password}),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || "Login failed.");
+  }
+
+  return response.json();
+}
+
 export async function postCycleProfile(cycleProfile) {
   const response = await fetch(`${API_BASE_URL}/cycle-profile`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
+    credentials: "include",
     body: JSON.stringify(cycleProfile),
   });
 
@@ -36,7 +53,9 @@ export async function fetchDailyGuidance(lowEnergy = false) {
     ? `${API_BASE_URL}/daily-guidance?low_energy=true`
     : `${API_BASE_URL}/daily-guidance`;
   
-  const response = await fetch(url);
+  const response = await fetch(url, {
+    credentials: "include",
+  });
   
   if (!response.ok) {
     const errorData = await response.json();
