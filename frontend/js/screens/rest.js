@@ -1,5 +1,5 @@
-import { fetchDailyGuidance, isLowEnergy, todayPickedIds } from "./api.js";
-import { phaseBlurbs } from './phaseBlurbs.js';
+import { fetchDailyGuidance, isLowEnergy, todayPickedIds } from "../api.js";
+import { phaseBlurbs } from '../phaseBlurbs.js';
 
 export async function renderRest() {
   try {

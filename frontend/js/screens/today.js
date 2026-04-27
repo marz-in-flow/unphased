@@ -1,4 +1,4 @@
-import { fetchDailyGuidance, isLowEnergy, setLowEnergy, todayPickedIds } from "./api.js";
+import { fetchDailyGuidance, isLowEnergy, setLowEnergy, todayPickedIds } from "../api.js";
 
 export async function renderToday() {
   try {
