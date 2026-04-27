@@ -1,11 +1,11 @@
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js');
 }
-import { renderOnboarding } from './onboarding.js';
-import { renderToday } from './today.js';
-import { renderMind } from './mind.js';
-import { renderBody } from './body.js';
-import { renderRest } from './rest.js';
+import { renderOnboarding } from './screens/onboarding.js';
+import { renderToday } from './screens/today.js';
+import { renderMind } from './screens/mind.js';
+import { renderBody } from './screens/body.js';
+import { renderRest } from './screens/rest.js';
 import { isLowEnergy } from './api.js';
 
 document.addEventListener("DOMContentLoaded", () => {
