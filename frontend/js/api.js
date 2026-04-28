@@ -17,6 +17,22 @@ export async function postLogin({ email, password }) {
   return response.json();
 }
 
+export async function postRegister({ email, password }) {
+  const response = await fetch(`${API_BASE_URL}/register`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json"},
+    credentials: "include",
+    body: JSON.stringify({ email, password}),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || "Registration failed.");
+  }
+
+  return response.json();
+}
+
 export async function postCycleProfile(cycleProfile) {
   const response = await fetch(`${API_BASE_URL}/cycle-profile`, {
     method: "POST",
