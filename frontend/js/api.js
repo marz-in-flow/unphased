@@ -1,6 +1,19 @@
 const API_BASE_URL = "";
 export let todayPickedIds = [];
 
+export async function getMe() {
+  const response = await fetch(`${API_BASE_URL}/me`, {
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || "Failed to check authentication.");
+  }
+
+  return response.json();
+}
+
 export async function postLogin({ email, password }) {
   const response = await fetch(`${API_BASE_URL}/login`, {
     method: "POST",

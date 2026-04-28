@@ -1,29 +1,33 @@
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js');
 }
+import { renderLogin } from './screens/login.js';
 import { renderOnboarding } from './screens/onboarding.js';
 import { renderToday } from './screens/today.js';
 import { renderMind } from './screens/mind.js';
 import { renderBody } from './screens/body.js';
 import { renderRest } from './screens/rest.js';
 import { isLowEnergy } from './api.js';
+import { getMe } from './api.js';
 
 document.addEventListener("DOMContentLoaded", () => {
-  const profile = localStorage.getItem("cycleProfile");
-
-  if (!profile) {
-    showOnboarding();
-  } else {
-    showMainApp("today");
-  }
+  routeAfterAuth();
 });
 
-function showOnboarding() {
-  document.getElementById("bottom-nav").style.display = "none";
-  document.body.className = "mode-onboarding";
-  renderOnboarding(() => {
-    showMainApp("today");
-  });
+async function routeAfterAuth() {
+  const me = await getMe();
+
+  if (!me.authenticated) {
+    renderLogin(routeAfterAuth);
+    return;
+  }
+
+  if (!me.hasProfile) {
+    renderOnboarding(routeAfterAuth);
+    return;
+  }
+
+  showMainApp("today");
 }
 
 function showMainApp(view) {

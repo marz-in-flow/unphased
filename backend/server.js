@@ -76,11 +76,14 @@ app.get("/me", async(req, res) => {
   const userId = req.session.userId;
   
   if (!userId) {
-    return res.status(401).json({authenticated: false});
+    return res.status(200).json({
+      authenticated: false,
+      hasProfile: false
+    });
   }
 
   const hasProfileQuery = `
-   SELECT EXISTS (SELECT 1 FROM cycle_profiles WHERE user_id = $1) LIMIT 1
+   SELECT EXISTS (SELECT 1 FROM cycle_profiles WHERE user_id = $1)
   `;
 
   try {
@@ -93,7 +96,7 @@ app.get("/me", async(req, res) => {
     });
   } catch (err) {
     console.error(err);
-    return res.status(200).json({ error: "Something went wrong" });
+    return res.status(500).json({ error: "Something went wrong" });
   }
 });
 
