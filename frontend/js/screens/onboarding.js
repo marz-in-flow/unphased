@@ -1,8 +1,10 @@
 import { postCycleProfile } from "../api.js";
 
 export function renderOnboarding(onComplete) {
-  const content = document.getElementById("content");
+  document.getElementById("bottom-nav").style.display = "none";
+  document.body.className = "mode-onboarding";
 
+  const content = document.getElementById("content");
   content.innerHTML = `
     <section class="onboarding-screen">
       <header class="onboarding-header">
