@@ -35,26 +35,24 @@ function showMainApp(view) {
   showView(view);
 }
 
-function showView(view) {
-  const lowEnergy = isLowEnergy();
-
+function showView(view, onComplete) {
   document.querySelectorAll('.nav-tab').forEach(tab => {
     tab.classList.remove('active');
   });
   document.querySelector(`[data-tab="${view}"]`).classList.add('active');
 
   if (view === "today") {
-    renderToday();
+    renderToday(onComplete);
   } else if (view === "mind") {
-    renderMind(lowEnergy);
+    renderMind();
   } else if (view === "body") {
-    renderBody(lowEnergy);
+    renderBody();
   } else if (view === "rest") {
-    renderRest(lowEnergy);
+    renderRest();
   }
 }
 
 document.getElementById("bottom-nav").addEventListener("click", (e) => {
   const tab = e.target.dataset.tab;
-  if (tab) showView(tab);
+  if (tab) showView(tab, tab === "today" ? routeAfterAuth : undefined);
 });

@@ -1,6 +1,6 @@
 import { fetchDailyGuidance, isLowEnergy, setLowEnergy, todayPickedIds } from "../api.js";
 
-export async function renderToday() {
+export async function renderToday(onComplete) {
   try {
     const lowEnergy = isLowEnergy();
     const data = await fetchDailyGuidance(lowEnergy);
