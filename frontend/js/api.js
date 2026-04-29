@@ -1,4 +1,9 @@
 const API_BASE_URL = "";
+
+let cachedGuidance = null;
+let cachedLowEnergyGuidance = null;
+let cacheDate = null;
+
 export let todayPickedIds = [];
 
 export async function getMe() {
@@ -57,6 +62,10 @@ export async function postLogout() {
     throw new Error(errorData.error || "Logout failed.");
   }
 
+cachedGuidance = null;
+cachedLowEnergyGuidance = null;
+todayPickedIds.length = 0;
+
   return response.json();
 }
 
@@ -76,21 +85,17 @@ export async function postCycleProfile(cycleProfile) {
   return response.json();
 }
 
-let cachedDefault = null;
-let cachedLowEnergy = null;
-let cacheDate = null;
-
 export async function fetchDailyGuidance(lowEnergy = false) {
   const today = new Date().toISOString().slice(0,10);
 
   if(cacheDate !== today) {
-    cachedDefault = null;
-    cachedLowEnergy = null;
+    cachedGuidance = null;
+    cachedLowEnergyGuidance = null;
     cacheDate = today;
   }
 
-  if (lowEnergy && cachedLowEnergy) return cachedLowEnergy;
-  if(!lowEnergy && cachedDefault) return cachedDefault;
+  if (lowEnergy && cachedLowEnergyGuidance) return cachedLowEnergyGuidance;
+  if(!lowEnergy && cachedGuidance) return cachedGuidance;
   
   const url = lowEnergy 
     ? `${API_BASE_URL}/daily-guidance?low_energy=true`
@@ -108,9 +113,9 @@ export async function fetchDailyGuidance(lowEnergy = false) {
   const data = await response.json();
 
   if (lowEnergy) {
-    cachedLowEnergy = data;
+    cachedLowEnergyGuidance = data;
   } else {
-    cachedDefault = data;
+    cachedGuidance = data;
   }
 
   return data;
