@@ -46,6 +46,20 @@ export async function postRegister({ email, password }) {
   return response.json();
 }
 
+export async function postLogout() {
+  const response = await fetch(`${API_BASE_URL}/logout`, {
+    method: "POST",
+    credentials: "include",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || "Logout failed.");
+  }
+
+  return response.json();
+}
+
 export async function postCycleProfile(cycleProfile) {
   const response = await fetch(`${API_BASE_URL}/cycle-profile`, {
     method: "POST",
