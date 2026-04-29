@@ -1,4 +1,4 @@
-import { fetchDailyGuidance, isLowEnergy, setLowEnergy, todayPickedIds } from "../api.js";
+import { fetchDailyGuidance, isLowEnergy, setLowEnergy, todayPickedIds, postLogout } from "../api.js";
 
 export async function renderToday(onComplete) {
   try {
@@ -80,9 +80,23 @@ export async function renderToday(onComplete) {
   toggle.addEventListener("change", (e) => {
   console.log("Toggle clicked:", e.target.checked);
   setLowEnergy(e.target.checked);
-  renderToday();
+  renderToday(onComplete);
   });
   }catch (errorObj) {
       console.error(errorObj);
   }
+
+  document.querySelector("#logout-btn").addEventListener("click", async () => {
+  try {
+    await postLogout();
+    localStorage.removeItem("lowEnergy");
+    if (onComplete) {
+      onComplete();
+    } else {
+    }
+  } catch (err) {
+    console.error("Logout failed:", err);
+  }
+});
+
 }
