@@ -244,9 +244,36 @@ body.mode-onboarding {
 }
 
 .today-header-icon {
-  font-size: 2.5rem;
+  font-size: 2 rem;
 }
 
+.logout-btn {
+  padding: 0.5rem 0.875rem;
+  font: inherit;
+  font-weight: 600;
+  background-color: var(--accent-purple);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  width: auto;
+}
+
+.mode-restore .logout-btn {
+  background-color: var(--restore);
+}
+
+.mode-build .logout-btn {
+  background-color: var(--build);
+}
+
+.mode-peak .logout-btn {
+  background-color: var(--peak);
+}
+
+.mode-protect .logout-btn {
+  background-color: var(--protect);
+}
 
 .screen-header {
   text-align: center;
@@ -277,7 +304,6 @@ body.mode-onboarding {
   background: none;
   font-style: italic;
 }
-
 
 .mode-title {
   font-size: 2.2rem;

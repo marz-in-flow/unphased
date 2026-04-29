@@ -29,13 +29,16 @@ export async function renderToday(onComplete) {
   content.innerHTML = `
     <header class="today-header">
       <div class="today-header-text">
-        <h1 class="mode-title">${data.mode}</h1>
+        <h1 class="mode-title">
+          <span class="today-header-icon">${moonIcon}</span>
+          ${data.mode}
+        </h1>
         <p class="cycle-info">Day ${data.day} · ${data.phase}</p>
       </div>
-      <span class="today-header-icon">${moonIcon}</span>
+
+      <button type="button" id="logout-btn" class="logout-btn">Log out</button>
     </header>
 
-    
     <section class="today-screen">
       <section class="energy-toggle">
         <div class="form-check form-switch d-flex align-items-center justify-content-center">
