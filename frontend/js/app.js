@@ -27,12 +27,12 @@ async function routeAfterAuth() {
     return;
   }
 
-  showMainApp("today");
+  showMainApp("today", routeAfterAuth);
 }
 
-function showMainApp(view) {
+function showMainApp(view, onComplete) {
   document.getElementById("bottom-nav").style.display = "flex";
-  showView(view);
+  showView(view, onComplete);
 }
 
 function showView(view, onComplete) {
