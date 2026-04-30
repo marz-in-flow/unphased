@@ -1,5 +1,27 @@
 const API_BASE_URL = "";
+
+let cachedGuidance = null;
+let cachedLowEnergyGuidance = null;
+let cacheDate = null;
+let onUnauthorized = null;
 export let todayPickedIds = [];
+
+export function setOnUnauthorized(callback) {
+  onUnauthorized = callback;
+}
+
+async function authedFetch(url, options = {}) {
+  const response = await fetch(url, {
+    ...options,
+    credentials: "include",
+  });
+
+  if (response.status === 401 && onUnauthorized) {
+    onUnauthorized({ reason: "session_expired" });
+  }
+
+  return response;
+}
 
 export async function getMe() {
   const response = await fetch(`${API_BASE_URL}/me`, {
@@ -46,11 +68,27 @@ export async function postRegister({ email, password }) {
   return response.json();
 }
 
+export async function postLogout() {
+  const response = await authedFetch(`${API_BASE_URL}/logout`, {
+    method: "POST",
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || "Logout failed.");
+  }
+
+cachedGuidance = null;
+cachedLowEnergyGuidance = null;
+todayPickedIds.length = 0;
+
+  return response.json();
+}
+
 export async function postCycleProfile(cycleProfile) {
-  const response = await fetch(`${API_BASE_URL}/cycle-profile`, {
+  const response = await authedFetch(`${API_BASE_URL}/cycle-profile`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    credentials: "include",
     body: JSON.stringify(cycleProfile),
   });
 
@@ -62,29 +100,23 @@ export async function postCycleProfile(cycleProfile) {
   return response.json();
 }
 
-let cachedDefault = null;
-let cachedLowEnergy = null;
-let cacheDate = null;
-
 export async function fetchDailyGuidance(lowEnergy = false) {
   const today = new Date().toISOString().slice(0,10);
 
   if(cacheDate !== today) {
-    cachedDefault = null;
-    cachedLowEnergy = null;
+    cachedGuidance = null;
+    cachedLowEnergyGuidance = null;
     cacheDate = today;
   }
 
-  if (lowEnergy && cachedLowEnergy) return cachedLowEnergy;
-  if(!lowEnergy && cachedDefault) return cachedDefault;
+  if (lowEnergy && cachedLowEnergyGuidance) return cachedLowEnergyGuidance;
+  if(!lowEnergy && cachedGuidance) return cachedGuidance;
   
   const url = lowEnergy 
     ? `${API_BASE_URL}/daily-guidance?low_energy=true`
     : `${API_BASE_URL}/daily-guidance`;
   
-  const response = await fetch(url, {
-    credentials: "include",
-  });
+  const response = await authedFetch(url);
   
   if (!response.ok) {
     const errorData = await response.json();
@@ -94,9 +126,9 @@ export async function fetchDailyGuidance(lowEnergy = false) {
   const data = await response.json();
 
   if (lowEnergy) {
-    cachedLowEnergy = data;
+    cachedLowEnergyGuidance = data;
   } else {
-    cachedDefault = data;
+    cachedGuidance = data;
   }
 
   return data;

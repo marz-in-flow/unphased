@@ -7,18 +7,23 @@ import { renderToday } from './screens/today.js';
 import { renderMind } from './screens/mind.js';
 import { renderBody } from './screens/body.js';
 import { renderRest } from './screens/rest.js';
-import { isLowEnergy } from './api.js';
-import { getMe } from './api.js';
+import { isLowEnergy, getMe, setOnUnauthorized } from './api.js';
+
+setOnUnauthorized(routeAfterAuth);
 
 document.addEventListener("DOMContentLoaded", () => {
   routeAfterAuth();
 });
 
-async function routeAfterAuth() {
+async function routeAfterAuth(context = {}) {
   const me = await getMe();
 
   if (!me.authenticated) {
-    renderLogin(routeAfterAuth);
+    localStorage.removeItem("lowEnergy");
+    const message = context.reason === "session_expired"
+      ? "Your session expired. Please log in again."
+      : null;
+    renderLogin(routeAfterAuth, message);
     return;
   }
 
@@ -27,34 +32,32 @@ async function routeAfterAuth() {
     return;
   }
 
-  showMainApp("today");
+  showMainApp("today", routeAfterAuth);
 }
 
-function showMainApp(view) {
+function showMainApp(view, onComplete) {
   document.getElementById("bottom-nav").style.display = "flex";
-  showView(view);
+  showView(view, onComplete);
 }
 
-function showView(view) {
-  const lowEnergy = isLowEnergy();
-
+function showView(view, onComplete) {
   document.querySelectorAll('.nav-tab').forEach(tab => {
     tab.classList.remove('active');
   });
   document.querySelector(`[data-tab="${view}"]`).classList.add('active');
 
   if (view === "today") {
-    renderToday();
+    renderToday(onComplete);
   } else if (view === "mind") {
-    renderMind(lowEnergy);
+    renderMind();
   } else if (view === "body") {
-    renderBody(lowEnergy);
+    renderBody();
   } else if (view === "rest") {
-    renderRest(lowEnergy);
+    renderRest();
   }
 }
 
 document.getElementById("bottom-nav").addEventListener("click", (e) => {
   const tab = e.target.dataset.tab;
-  if (tab) showView(tab);
+  if (tab) showView(tab, tab === "today" ? routeAfterAuth : undefined);
 });
