@@ -89,7 +89,6 @@ export async function renderToday(onComplete) {
   document.querySelector("#logout-btn").addEventListener("click", async () => {
   try {
     await postLogout();
-    localStorage.removeItem("lowEnergy");
     if (onComplete) {
       onComplete();
     } else {
