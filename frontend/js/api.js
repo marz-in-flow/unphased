@@ -3,8 +3,25 @@ const API_BASE_URL = "";
 let cachedGuidance = null;
 let cachedLowEnergyGuidance = null;
 let cacheDate = null;
-
+let onUnauthorized = null;
 export let todayPickedIds = [];
+
+export function setOnUnauthorized(callback) {
+  onUnauthorized = callback;
+}
+
+async function authedFetch(url, options = {}) {
+  const response = await fetch(url, {
+    ...options,
+    credentials: "include",
+  });
+
+  if (response.status === 401 && onUnauthorized) {
+    onUnauthorized({ reason: "session_expired" });
+  }
+
+  return response;
+}
 
 export async function getMe() {
   const response = await fetch(`${API_BASE_URL}/me`, {
@@ -52,9 +69,8 @@ export async function postRegister({ email, password }) {
 }
 
 export async function postLogout() {
-  const response = await fetch(`${API_BASE_URL}/logout`, {
+  const response = await authedFetch(`${API_BASE_URL}/logout`, {
     method: "POST",
-    credentials: "include",
   });
 
   if (!response.ok) {
@@ -70,10 +86,9 @@ todayPickedIds.length = 0;
 }
 
 export async function postCycleProfile(cycleProfile) {
-  const response = await fetch(`${API_BASE_URL}/cycle-profile`, {
+  const response = await authedFetch(`${API_BASE_URL}/cycle-profile`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    credentials: "include",
     body: JSON.stringify(cycleProfile),
   });
 
@@ -101,9 +116,7 @@ export async function fetchDailyGuidance(lowEnergy = false) {
     ? `${API_BASE_URL}/daily-guidance?low_energy=true`
     : `${API_BASE_URL}/daily-guidance`;
   
-  const response = await fetch(url, {
-    credentials: "include",
-  });
+  const response = await authedFetch(url);
   
   if (!response.ok) {
     const errorData = await response.json();

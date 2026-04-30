@@ -1,7 +1,7 @@
 import { renderRegister } from './register.js';
 import { postLogin } from '../api.js';
 
-export function renderLogin(onComplete) {
+export function renderLogin(onComplete, message) {
   document.getElementById("bottom-nav").style.display = "none";
   document.body.className = "mode-onboarding";
   
@@ -16,6 +16,7 @@ export function renderLogin(onComplete) {
       />
       <p>Daily Direction, Powered by Your Biology</p>
     </header>
+    ${message ? `<div class="alert alert-info">${message}</div>` : ""}
     <form id="onboarding-form">
       <label for="email">Email </label>
       <input type="email" id="email" name="email" required/>

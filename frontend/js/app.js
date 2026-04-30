@@ -7,18 +7,23 @@ import { renderToday } from './screens/today.js';
 import { renderMind } from './screens/mind.js';
 import { renderBody } from './screens/body.js';
 import { renderRest } from './screens/rest.js';
-import { isLowEnergy } from './api.js';
-import { getMe } from './api.js';
+import { isLowEnergy, getMe, setOnUnauthorized } from './api.js';
+
+setOnUnauthorized(routeAfterAuth);
 
 document.addEventListener("DOMContentLoaded", () => {
   routeAfterAuth();
 });
 
-async function routeAfterAuth() {
+async function routeAfterAuth(context = {}) {
   const me = await getMe();
 
   if (!me.authenticated) {
-    renderLogin(routeAfterAuth);
+    localStorage.removeItem("lowEnergy");
+    const message = context.reason === "session_expired"
+      ? "Your session expired. Please log in again."
+      : null;
+    renderLogin(routeAfterAuth, message);
     return;
   }
 
