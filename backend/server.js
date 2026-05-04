@@ -399,6 +399,29 @@ app.post("/cycle-logs", requireAuth, async (req, res) => {
   }
 });
 
+app.get("/cycle-logs", requireAuth, async (req, res)=> {
+  const userId = req.session.userId;
+
+  try {
+    const cycleLogsQuery = `
+      SELECT id, period_start_date, notes
+      FROM cycle_logs
+      WHERE user_id = $1
+      ORDER BY period_start_date DESC
+    `;
+    const cycleLogsResult = await pool.query(cycleLogsQuery, [userId]);
+
+    return res.status(200).json({
+      data: cycleLogsResult.rows
+    });
+  } catch (err) {
+    console.error(err);
+
+    return res.status(500).json({
+      error: "Something went wrong",
+    });
+  }
+});
 // ---------- Server start ----------
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
