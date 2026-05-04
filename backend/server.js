@@ -321,6 +321,84 @@ app.get("/daily-guidance", requireAuth, async (req, res) => {
   }
 });
 
+app.post("/cycle-logs", requireAuth, async (req, res) => {
+  const userId = req.session.userId;
+  const { periodStartDate } = req.body;
+
+  if (!periodStartDate) {
+    return res.status(400).json({
+      error: "periodStartDate is required",
+    });
+  }
+
+  const parsedPeriodStartDate = new Date(periodStartDate);
+
+  if (Number.isNaN(parsedPeriodStartDate.getTime())) {
+    return res.status(400).json({
+      error: "periodStartDate must be a valid date",
+    });
+  }
+
+  parsedPeriodStartDate.setHours(0, 0, 0, 0);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (parsedPeriodStartDate > today) {
+    return res.status(400).json({
+      error: "periodStartDate cannot be in the future",
+    });
+  }
+
+  try {
+    const profileResult = await pool.query(
+      `
+      SELECT cycle_start_date
+      FROM cycle_profiles
+      WHERE user_id = $1
+      `,
+      [userId]
+    );
+
+    if (!profileResult.rows[0]) {
+      return res.status(400).json({
+        error: "Cycle profile is required before adding a period log.",
+      });
+    }
+
+    const cycleStartDate = new Date(profileResult.rows[0].cycle_start_date);
+    cycleStartDate.setHours(0, 0, 0, 0);
+
+    if (parsedPeriodStartDate < cycleStartDate) {
+      return res.status(400).json({
+        error: "periodStartDate cannot be earlier than cycleStartDate",
+      });
+    }
+
+    const insertCycleLogQuery = `
+      INSERT INTO cycle_logs (user_id, period_start_date)
+      VALUES ($1, $2)
+      RETURNING id, period_start_date
+    `;
+
+    const insertResult = await pool.query(insertCycleLogQuery, [
+      userId,
+      periodStartDate,
+    ]);
+
+    return res.status(201).json({
+      message: "Period log saved.",
+      data: insertResult.rows[0],
+    });
+  } catch (err) {
+    console.error(err);
+
+    return res.status(500).json({
+      error: "Something went wrong",
+    });
+  }
+});
+
 // ---------- Server start ----------
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
