@@ -391,8 +391,11 @@ app.post("/cycle-logs", requireAuth, async (req, res) => {
       data: insertResult.rows[0],
     });
   } catch (err) {
+    if (err.code === "23505") { //PostgreSQL unique violation
+      return res.status(409).json({ 
+        error: "Period already logged for this date" });
+    }
     console.error(err);
-
     return res.status(500).json({
       error: "Something went wrong",
     });
