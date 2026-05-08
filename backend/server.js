@@ -425,6 +425,95 @@ app.get("/cycle-logs", requireAuth, async (req, res)=> {
     });
   }
 });
+
+app.patch("/cycle-logs/:id", requireAuth, async (req, res) => {
+  const userId = req.session.userId;
+  const { id } = req.params;
+  const { newPeriodStartDate, newNotes } = req.body;
+
+  if (!newPeriodStartDate && !newNotes) {
+    return res.status(400).json({
+      error: "newPeriodStartDate or newNotes are required",
+    });
+  }
+
+  if (newPeriodStartDate) {
+    const parsedNewPeriodStartDate = new Date(newPeriodStartDate);
+
+    if (Number.isNaN(parsedNewPeriodStartDate.getTime())) {
+      return res.status(400).json({
+        error: "newPeriodStartDate must be a valid date",
+      });
+    }
+
+    parsedNewPeriodStartDate.setHours(0, 0, 0, 0);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (parsedNewPeriodStartDate > today) {
+      return res.status(400).json({
+        error: "newPeriodStartDate cannot be in the future",
+      });
+    }
+
+    const profileResult = await pool.query(
+      `
+      SELECT cycle_start_date
+      FROM cycle_profiles
+      WHERE user_id = $1
+      `,
+      [userId]
+    );
+
+    const cycleStartDate = new Date(profileResult.rows[0].cycle_start_date);
+    cycleStartDate.setHours(0, 0, 0, 0);
+
+    if (parsedNewPeriodStartDate < cycleStartDate) {
+      return res.status(400).json({
+        error: "newPeriodStartDate cannot be earlier than cycleStartDate",
+      });
+    }
+  }
+
+  try {
+    const updateCycleLogQuery = `
+      UPDATE cycle_logs
+      SET period_start_date = COALESCE($1, period_start_date),
+          notes = COALESCE($2, notes)
+      WHERE user_id = $3 AND id = $4
+      RETURNING id, period_start_date, notes
+    `;
+
+    const updateResult = await pool.query(updateCycleLogQuery, [
+      newPeriodStartDate || null,
+      newNotes || null,
+      userId,
+      id,
+    ]);
+
+    if (updateResult.rows.length === 0) {
+      return res.status(404).json({ error: "Log not found" });
+    }
+
+    return res.status(200).json({
+      message: "Period log modified.",
+      data: updateResult.rows[0],
+    });
+  } catch (err) {
+    if (err.code === "23505") {
+      return res.status(409).json({
+        error: "Period already logged for this date",
+      });
+    }
+    console.error(err);
+    return res.status(500).json({
+      error: "Something went wrong",
+    });
+  }
+});
+
+
 // ---------- Server start ----------
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
