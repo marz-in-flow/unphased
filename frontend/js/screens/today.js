@@ -94,7 +94,6 @@ export async function renderToday(onComplete) {
     await postLogout();
     if (onComplete) {
       onComplete();
-    } else {
     }
   } catch (err) {
     console.error("Logout failed:", err);
