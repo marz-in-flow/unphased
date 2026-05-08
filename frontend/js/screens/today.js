@@ -36,7 +36,10 @@ export async function renderToday(onComplete) {
         <p class="cycle-info">Day ${data.day} · ${data.phase}</p>
       </div>
 
+      <div class="today-btns">
       <button type="button" id="logout-btn" class="logout-btn">Log out</button>
+      <button id="tracker-btn" class="logout-btn">Track Period</button>
+      </div>
     </header>
 
     <section class="today-screen">
