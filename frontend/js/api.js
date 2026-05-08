@@ -168,11 +168,14 @@ export async function fetchCycleLogs() {
   return data;
 }
 
-export async function postCycleLog(periodStartDate) {
+export async function postCycleLog(periodStartDate, notes) {
   const response = await authedFetch(`${API_BASE_URL}/cycle-logs`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ periodStartDate }),
+    body: JSON.stringify({ 
+      periodStartDate,
+      notes
+   }),
   });
 
   if (!response.ok) {
@@ -183,21 +186,33 @@ export async function postCycleLog(periodStartDate) {
   return response.json();
 }
 
-// export async function updateCycleLog({ id, newPeriodStartDate, newNotes }) {
-//   const response = await authedFetch(`${API_BASE_URL}/cycle-logs`, {
-//     method: "PATCH",
-//     headers: { "Content-Type": "application/json" },
-//     body: JSON.stringify({
-//       id,
-//       newPeriodStartDate, 
-//       newNotes
-//     }),
-//   });
+export async function updateCycleLog({ id, newPeriodStartDate, newNotes }) {
+  const response = await authedFetch(`${API_BASE_URL}/cycle-logs/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      newPeriodStartDate, 
+      newNotes
+    }),
+  });
 
-//    if (!response.ok) {
-//     const errorData = await response.json();
-//     throw new Error(errorData.error || "Failed to edit period entry.");
-//   }
+   if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || "Failed to edit period entry.");
+  }
 
-//   return response.json();
-// }
+  return response.json();
+}
+
+export async function deleteCycleLog({ id, newPeriodStartDate, newNotes }) {
+  const response = await authedFetch(`${API_BASE_URL}/cycle-logs/${id}`, {
+    method: "DELETE",
+  });
+
+   if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || "Failed to delete period entry.");
+  }
+
+  return response.json();
+}
