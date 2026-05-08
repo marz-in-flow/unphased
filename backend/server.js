@@ -321,6 +321,230 @@ app.get("/daily-guidance", requireAuth, async (req, res) => {
   }
 });
 
+app.post("/cycle-logs", requireAuth, async (req, res) => {
+  const userId = req.session.userId;
+  const { periodStartDate } = req.body;
+
+  if (!periodStartDate) {
+    return res.status(400).json({
+      error: "periodStartDate is required",
+    });
+  }
+
+  const parsedPeriodStartDate = new Date(periodStartDate);
+
+  if (Number.isNaN(parsedPeriodStartDate.getTime())) {
+    return res.status(400).json({
+      error: "periodStartDate must be a valid date",
+    });
+  }
+
+  parsedPeriodStartDate.setHours(0, 0, 0, 0);
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (parsedPeriodStartDate > today) {
+    return res.status(400).json({
+      error: "periodStartDate cannot be in the future",
+    });
+  }
+
+  try {
+    const profileResult = await pool.query(
+      `
+      SELECT cycle_start_date
+      FROM cycle_profiles
+      WHERE user_id = $1
+      `,
+      [userId]
+    );
+
+    if (!profileResult.rows[0]) {
+      return res.status(400).json({
+        error: "Cycle profile is required before adding a period log.",
+      });
+    }
+
+    const cycleStartDate = new Date(profileResult.rows[0].cycle_start_date);
+    cycleStartDate.setHours(0, 0, 0, 0);
+
+    if (parsedPeriodStartDate < cycleStartDate) {
+      return res.status(400).json({
+        error: "periodStartDate cannot be earlier than cycleStartDate",
+      });
+    }
+
+    const insertCycleLogQuery = `
+      INSERT INTO cycle_logs (user_id, period_start_date)
+      VALUES ($1, $2)
+      RETURNING id, period_start_date
+    `;
+
+    const insertResult = await pool.query(insertCycleLogQuery, [
+      userId,
+      periodStartDate,
+    ]);
+
+    return res.status(201).json({
+      message: "Period log saved.",
+      data: insertResult.rows[0],
+    });
+  } catch (err) {
+    if (err.code === "23505") { //PostgreSQL unique violation
+      return res.status(409).json({ 
+        error: "Period already logged for this date" });
+    }
+    console.error(err);
+    return res.status(500).json({
+      error: "Something went wrong",
+    });
+  }
+});
+
+app.get("/cycle-logs", requireAuth, async (req, res)=> {
+  const userId = req.session.userId;
+
+  try {
+    const cycleLogsQuery = `
+      SELECT id, period_start_date, notes
+      FROM cycle_logs
+      WHERE user_id = $1
+      ORDER BY period_start_date DESC
+    `;
+    const cycleLogsResult = await pool.query(cycleLogsQuery, [userId]);
+
+    return res.status(200).json({
+      data: cycleLogsResult.rows
+    });
+  } catch (err) {
+    console.error(err);
+
+    return res.status(500).json({
+      error: "Something went wrong",
+    });
+  }
+});
+
+app.patch("/cycle-logs/:id", requireAuth, async (req, res) => {
+  const userId = req.session.userId;
+  const { id } = req.params;
+  const { newPeriodStartDate, newNotes } = req.body;
+
+  if (!newPeriodStartDate && !newNotes) {
+    return res.status(400).json({
+      error: "newPeriodStartDate or newNotes are required",
+    });
+  }
+
+  if (newPeriodStartDate) {
+    const parsedNewPeriodStartDate = new Date(newPeriodStartDate);
+
+    if (Number.isNaN(parsedNewPeriodStartDate.getTime())) {
+      return res.status(400).json({
+        error: "newPeriodStartDate must be a valid date",
+      });
+    }
+
+    parsedNewPeriodStartDate.setHours(0, 0, 0, 0);
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (parsedNewPeriodStartDate > today) {
+      return res.status(400).json({
+        error: "newPeriodStartDate cannot be in the future",
+      });
+    }
+
+    const profileResult = await pool.query(
+      `
+      SELECT cycle_start_date
+      FROM cycle_profiles
+      WHERE user_id = $1
+      `,
+      [userId]
+    );
+
+    const cycleStartDate = new Date(profileResult.rows[0].cycle_start_date);
+    cycleStartDate.setHours(0, 0, 0, 0);
+
+    if (parsedNewPeriodStartDate < cycleStartDate) {
+      return res.status(400).json({
+        error: "newPeriodStartDate cannot be earlier than cycleStartDate",
+      });
+    }
+  }
+
+  try {
+    const updateCycleLogQuery = `
+      UPDATE cycle_logs
+      SET period_start_date = COALESCE($1, period_start_date),
+          notes = COALESCE($2, notes)
+      WHERE user_id = $3 AND id = $4
+      RETURNING id, period_start_date, notes
+    `;
+
+    const updateResult = await pool.query(updateCycleLogQuery, [
+      newPeriodStartDate || null,
+      newNotes || null,
+      userId,
+      id,
+    ]);
+
+    if (updateResult.rows.length === 0) {
+      return res.status(404).json({ error: "Log not found" });
+    }
+
+    return res.status(200).json({
+      message: "Period log modified.",
+      data: updateResult.rows[0],
+    });
+  } catch (err) {
+    if (err.code === "23505") {
+      return res.status(409).json({
+        error: "Period already logged for this date",
+      });
+    }
+    console.error(err);
+    return res.status(500).json({
+      error: "Something went wrong",
+    });
+  }
+});
+
+app.delete("/cycle-logs/:id", requireAuth, async (req, res) => {
+  const userId = req.session.userId;
+  const { id } = req.params;
+
+  try {
+    const deleteCycleLogQuery = `
+      DELETE from cycle_logs
+      WHERE user_id = $1 AND id =$2
+      RETURNING *
+    `;
+
+    const deleteResult = await pool.query(deleteCycleLogQuery, [
+      userId,
+      id
+    ]);
+
+    if (deleteResult.rows.length === 0) {
+      return res.status(404).json({ error: "Log not found" });
+    }
+
+    return res.status(200).json({
+      message: "Period log deleted.",
+      data: deleteResult.rows[0],
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      error: "Something went wrong",
+    });
+  }
+});
+
 // ---------- Server start ----------
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

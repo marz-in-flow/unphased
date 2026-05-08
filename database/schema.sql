@@ -34,7 +34,9 @@ CREATE TABLE cycle_logs (
   CONSTRAINT fk_cycle_logs_user
     FOREIGN KEY (user_id)
     REFERENCES users(id)
-    ON DELETE CASCADE
+    ON DELETE CASCADE,
+  CONSTRAINT unique_user_period_date
+    UNIQUE (user_id, period_start_date)
 );
 
 CREATE TABLE suggestions (
