@@ -36,6 +36,28 @@ export async function getMe() {
   return response.json();
 }
 
+export function setLowEnergy(active) {
+  localStorage.setItem("lowEnergy", JSON.stringify({
+    active,
+    date: new Date().toISOString().slice(0, 10)
+  }));
+}
+
+export function isLowEnergy() {
+  const stored = localStorage.getItem("lowEnergy");
+  if (!stored) return false;
+
+  const { active, date } = JSON.parse(stored);
+  const today = new Date().toISOString().slice(0, 10);
+
+  if (date !== today) {
+    localStorage.removeItem("lowEnergy");
+    return false;
+  }
+
+  return active;
+}
+
 export async function postLogin({ email, password }) {
   const response = await fetch(`${API_BASE_URL}/login`, {
     method: "POST",
@@ -134,24 +156,48 @@ export async function fetchDailyGuidance(lowEnergy = false) {
   return data;
 }
 
-export function setLowEnergy(active) {
-  localStorage.setItem("lowEnergy", JSON.stringify({
-    active,
-    date: new Date().toISOString().slice(0, 10)
-  }));
-}
-
-export function isLowEnergy() {
-  const stored = localStorage.getItem("lowEnergy");
-  if (!stored) return false;
-
-  const { active, date } = JSON.parse(stored);
-  const today = new Date().toISOString().slice(0, 10);
-
-  if (date !== today) {
-    localStorage.removeItem("lowEnergy");
-    return false;
+export async function fetchCycleLogs() {
+  const response = await authedFetch(`${API_BASE_URL}/cycle-logs`);
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || "Failed to retrieve period logs.");
   }
 
-  return active;
+  const data = await response.json();
+
+  return data;
 }
+
+export async function postCycleLog(periodStartDate) {
+  const response = await authedFetch(`${API_BASE_URL}/cycle-logs`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ periodStartDate }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.error || "Failed to save new period.");
+  }
+
+  return response.json();
+}
+
+// export async function updateCycleLog({ id, newPeriodStartDate, newNotes }) {
+//   const response = await authedFetch(`${API_BASE_URL}/cycle-logs`, {
+//     method: "PATCH",
+//     headers: { "Content-Type": "application/json" },
+//     body: JSON.stringify({
+//       id,
+//       newPeriodStartDate, 
+//       newNotes
+//     }),
+//   });
+
+//    if (!response.ok) {
+//     const errorData = await response.json();
+//     throw new Error(errorData.error || "Failed to edit period entry.");
+//   }
+
+//   return response.json();
+// }
