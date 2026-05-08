@@ -1,4 +1,5 @@
 import { fetchDailyGuidance, isLowEnergy, setLowEnergy, todayPickedIds, postLogout } from "../api.js";
+import { renderTracker } from "./tracker.js";
 
 export async function renderToday(onComplete) {
   try {
@@ -100,4 +101,7 @@ export async function renderToday(onComplete) {
   }
 });
 
+document.querySelector("#tracker-btn").addEventListener("click", async () => {
+  await renderTracker(onComplete);
+});
 }
