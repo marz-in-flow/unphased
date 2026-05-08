@@ -513,6 +513,37 @@ app.patch("/cycle-logs/:id", requireAuth, async (req, res) => {
   }
 });
 
+app.delete("/cycle-logs/:id", requireAuth, async (req, res) => {
+  const userId = req.session.userId;
+  const { id } = req.params;
+
+  try {
+    const deleteCycleLogQuery = `
+      DELETE from cycle_logs
+      WHERE user_id = $1 AND id =$2
+      RETURNING *
+    `;
+
+    const deleteResult = await pool.query(deleteCycleLogQuery, [
+      userId,
+      id
+    ]);
+
+    if (deleteResult.rows.length === 0) {
+      return res.status(404).json({ error: "Log not found" });
+    }
+
+    return res.status(200).json({
+      message: "Period log deleted.",
+      data: deleteResult.rows[0],
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      error: "Something went wrong",
+    });
+  }
+});
 
 // ---------- Server start ----------
 app.listen(PORT, () => {
