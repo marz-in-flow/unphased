@@ -121,16 +121,16 @@ export async function renderTracker(onBack) {
       notesInput.value = selectedEntry.notes || "";
       submitButton.textContent = "Update Period";
       document.getElementById("cancel-edit-btn").style.display = "inline";
+    }
+  });
 
-      document.getElementById("cancel-edit-btn").addEventListener("click", () => {
+  document.getElementById("cancel-edit-btn").addEventListener("click", () => {
         activeEditId = null;
         form.reset();
         submitButton.textContent = "Save Period";
         document.getElementById("cancel-edit-btn").style.display = "none";
       });
-    }
-  });
-
+      
   loadEntries();
 }
 
