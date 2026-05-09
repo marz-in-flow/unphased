@@ -69,6 +69,8 @@ export async function renderTracker(onBack) {
 
   logsList.addEventListener("click", async (event) => {
     if (event.target.classList.contains("delete-log-btn")) {
+      if (!confirm("Delete this period log?")) return;
+      
       const entry = event.target.closest(".period-entry");
       const logId = entry.dataset.logId;
  
