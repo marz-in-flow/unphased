@@ -196,6 +196,7 @@ app.post("/logout", (req, res) => {
  */
 app.post("/cycle-profile", requireAuth, async (req, res) => {
   const { cycleStartDate, cycleLengthDays } = req.body;
+  const userId = req.session.userId;
 
   if (!cycleStartDate || cycleLengthDays === undefined) {
     return res.status(400).json({
@@ -236,18 +237,28 @@ app.post("/cycle-profile", requireAuth, async (req, res) => {
   }
 
   try {
-    const query = `
+    const cycleProfileQuery = `
       INSERT INTO cycle_profiles (user_id, cycle_start_date, cycle_length_days)
       VALUES ($1, $2, $3)
       RETURNING *
     `;
 
     const values = [req.session.userId, cycleStartDate, cycleLength];
-    const result = await pool.query(query, values);
+    const profileResult = await pool.query(cycleProfileQuery, values);
+
+    const seedCycleLogQuery = `
+      INSERT INTO cycle_logs (user_id, period_start_date, notes)
+      VALUES ($1, $2, $3)
+      ON CONFLICT (user_id, period_start_date) DO NOTHING
+      RETURNING id, period_start_date, notes
+    `;
+
+    const seedLogResult = await pool.query(seedCycleLogQuery, [userId, cycleStartDate, null,]);
 
     res.status(201).json({
       message: "Cycle profile saved.",
-      data: result.rows[0],
+      data: profileResult.rows[0],
+      initialLog: seedLogResult.rows[0] || null,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -460,17 +471,16 @@ app.patch("/cycle-logs/:id", requireAuth, async (req, res) => {
 
     const profileResult = await pool.query(
       `
-      SELECT cycle_start_date
+      SELECT cycle_start_date::text AS cycle_start_date
       FROM cycle_profiles
       WHERE user_id = $1
       `,
       [userId]
     );
 
-    const cycleStartDate = new Date(profileResult.rows[0].cycle_start_date);
-    cycleStartDate.setHours(0, 0, 0, 0);
+    const cycleStartDate = profileResult.rows[0].cycle_start_date;
 
-    if (parsedNewPeriodStartDate < cycleStartDate) {
+    if (newPeriodStartDate < cycleStartDate) {
       return res.status(400).json({
         error: "newPeriodStartDate cannot be earlier than cycleStartDate",
       });
