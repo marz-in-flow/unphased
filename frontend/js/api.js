@@ -204,7 +204,7 @@ export async function updateCycleLog({ id, newPeriodStartDate, newNotes }) {
   return response.json();
 }
 
-export async function deleteCycleLog({ id, newPeriodStartDate, newNotes }) {
+export async function deleteCycleLog(id) {
   const response = await authedFetch(`${API_BASE_URL}/cycle-logs/${id}`, {
     method: "DELETE",
   });

@@ -40,31 +40,42 @@ export async function renderTracker(onBack) {
   const form = document.getElementById("period-log-form");
   const errorDisplay = document.getElementById("tracker-error");
   const logsList = document.getElementById("period-logs");
+  
   document.getElementById("back-btn").addEventListener("click", () => {
     onBack();
   });
 
   form.addEventListener("submit", async (event) => {
-  event.preventDefault();
+    event.preventDefault();
 
-  errorDisplay.textContent = "";
+    errorDisplay.textContent = "";
 
-  const formData = new FormData(form);
-  const periodStartDate = formData.get("periodStartDate");
-  const notes = formData.get("notes");
-  console.log({ periodStartDate, notes });
+    const formData = new FormData(form);
+    const periodStartDate = formData.get("periodStartDate");
+    const notes = formData.get("notes");
+    console.log({ periodStartDate, notes });
 
-  try {
-    await postCycleLog({ periodStartDate, notes });
+    try {
+      await postCycleLog({ periodStartDate, notes });
 
-    form.reset();
+      form.reset();
 
-    await loadCycleLogs(logsList);
-  } catch (err) {
-    errorDisplay.textContent = err.message;
-    console.error(err);
-  }
-});
+      await loadCycleLogs(logsList);
+    } catch (err) {
+      errorDisplay.textContent = err.message;
+      console.error(err);
+    }
+  });
+
+  logsList.addEventListener("click", async (event) => {
+    if (event.target.classList.contains("delete-log-btn")) {
+      const entry = event.target.closest(".period-entry");
+      const logId = entry.dataset.logId;
+ 
+      await deleteCycleLog(logId);
+      await loadCycleLogs(logsList);
+    }
+  });
 
   loadCycleLogs(logsList);
 }
@@ -106,10 +117,12 @@ function renderCycleLogs(container, logs) {
     actions.classList.add("period-entry-actions");
 
     const editButton = document.createElement("button");
+    editButton.classList.add("edit-log-btn");
     editButton.type = "button";
     editButton.textContent = "Edit";
 
     const deleteButton = document.createElement("button");
+    deleteButton.classList.add("delete-log-btn");
     deleteButton.type = "button";
     deleteButton.textContent = "Delete";
 

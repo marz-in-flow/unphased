@@ -521,7 +521,7 @@ app.delete("/cycle-logs/:id", requireAuth, async (req, res) => {
   try {
     const deleteCycleLogQuery = `
       DELETE from cycle_logs
-      WHERE user_id = $1 AND id =$2
+      WHERE user_id = $1 AND id = $2
       RETURNING *
     `;
 
