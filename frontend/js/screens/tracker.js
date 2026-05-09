@@ -40,10 +40,31 @@ export async function renderTracker(onBack) {
   const form = document.getElementById("period-log-form");
   const errorDisplay = document.getElementById("tracker-error");
   const logsList = document.getElementById("period-logs");
-
   document.getElementById("back-btn").addEventListener("click", () => {
     onBack();
   });
+
+  form.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  errorDisplay.textContent = "";
+
+  const formData = new FormData(form);
+  const periodStartDate = formData.get("periodStartDate");
+  const notes = formData.get("notes");
+  console.log({ periodStartDate, notes });
+
+  try {
+    await postCycleLog({ periodStartDate, notes });
+
+    form.reset();
+
+    await loadCycleLogs(logsList);
+  } catch (err) {
+    errorDisplay.textContent = err.message;
+    console.error(err);
+  }
+});
 
   loadCycleLogs(logsList);
 }
