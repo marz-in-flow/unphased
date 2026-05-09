@@ -41,7 +41,7 @@ export async function renderTracker(onBack) {
 
   const form = document.getElementById("period-log-form");
   const errorDisplay = document.getElementById("tracker-error");
-  const logsList = document.getElementById("period-logs");
+  const logsContainer = document.getElementById("period-logs");
   const dateInput = document.getElementById("period-start-date");
   const notesInput = document.getElementById("notes");
   const submitButton = form.querySelector('button[type="submit"]');
@@ -50,15 +50,15 @@ export async function renderTracker(onBack) {
   let editingLogId = null; //null means add mode; some id means edit mode
   
   async function loadCycleLogs() {
-    logsList.innerHTML = "<p>Loading period logs...</p>";
+    logsContainer.innerHTML = "<p>Loading period logs...</p>";
 
     try {
       const data = await fetchCycleLogs();
       currentLogs = data.data;
 
-      renderCycleLogs(logsList, currentLogs);
+      renderCycleLogs(logsContainer, currentLogs);
     } catch (err) {
-      logsList.innerHTML = "<p>Could not load period logs.</p>";
+      logsContainer.innerHTML = "<p>Could not load period logs.</p>";
       console.error(err);
     }
   }
@@ -95,7 +95,7 @@ export async function renderTracker(onBack) {
     }
   });
 
-  logsList.addEventListener("click", async (event) => {
+  logsContainer.addEventListener("click", async (event) => {
     if (event.target.classList.contains("delete-log-btn")) {
       if (!confirm("Delete this period log?")) return;
 
@@ -113,10 +113,9 @@ export async function renderTracker(onBack) {
     
     if (event.target.classList.contains("edit-log-btn")) {
       const entry = event.target.closest(".period-entry");
-      const logId = entry.dataset.logId;
-      editingLogId = logId;
+      editingLogId = entry.dataset.logId;
       const logToEdit = currentLogs.find((log) => {
-        return String(log.id) === String(logId);
+        return String(log.id) === String(editingLogId);
       });
       dateInput.value = logToEdit.period_start_date.slice(0, 10);
       notesInput.value = logToEdit.notes || "";
