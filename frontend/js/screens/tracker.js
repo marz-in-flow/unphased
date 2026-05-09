@@ -102,8 +102,13 @@ export async function renderTracker(onBack) {
       const entry = event.target.closest(".period-entry");
       const logId = entry.dataset.logId;
  
-      await deleteCycleLog(logId);
-      await loadCycleLogs();
+      try {
+        await deleteCycleLog(logId);
+        await loadCycleLogs();
+      } catch (err) {
+        alert("Could not delete this log. Please try again.");
+        console.error(err);
+      }
     }
     
     if (event.target.classList.contains("edit-log-btn")) {
