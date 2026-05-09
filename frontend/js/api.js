@@ -168,7 +168,7 @@ export async function fetchCycleLogs() {
   return data;
 }
 
-export async function postCycleLog(periodStartDate, notes) {
+export async function postCycleLog({ periodStartDate, notes }) {
   const response = await authedFetch(`${API_BASE_URL}/cycle-logs`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
