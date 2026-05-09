@@ -40,7 +40,27 @@ export async function renderTracker(onBack) {
   const form = document.getElementById("period-log-form");
   const errorDisplay = document.getElementById("tracker-error");
   const logsList = document.getElementById("period-logs");
+  const dateInput = document.getElementById("period-start-date");
+  const notesInput = document.getElementById("notes");
+  const submitButton = form.querySelector('button[type="submit"]');
+
+  let currentLogs = []; //logs currently loaded from the backend
+  let editingLogId = null; //null means add mode; some id means edit mode
   
+  async function loadCycleLogs() {
+    logsList.innerHTML = "<p>Loading period logs...</p>";
+
+    try {
+      const data = await fetchCycleLogs();
+      currentLogs = data.data;
+
+      renderCycleLogs(logsList, currentLogs);
+    } catch (err) {
+      logsList.innerHTML = "<p>Could not load period logs.</p>";
+      console.error(err);
+    }
+  }
+
   document.getElementById("back-btn").addEventListener("click", () => {
     onBack();
   });
@@ -60,7 +80,7 @@ export async function renderTracker(onBack) {
 
       form.reset();
 
-      await loadCycleLogs(logsList);
+      await loadCycleLogs();
     } catch (err) {
       errorDisplay.textContent = err.message;
       console.error(err);
@@ -70,31 +90,19 @@ export async function renderTracker(onBack) {
   logsList.addEventListener("click", async (event) => {
     if (event.target.classList.contains("delete-log-btn")) {
       if (!confirm("Delete this period log?")) return;
-      
+
       const entry = event.target.closest(".period-entry");
       const logId = entry.dataset.logId;
  
       await deleteCycleLog(logId);
-      await loadCycleLogs(logsList);
+      await loadCycleLogs();
     }
   });
 
-  loadCycleLogs(logsList);
+  loadCycleLogs();
 }
 
-async function loadCycleLogs(logsList) {
-  logsList.innerHTML = "<p>Loading period logs...</p>";
 
-  try {
-    const data = await fetchCycleLogs();
-    const logs = data.data;
-
-    renderCycleLogs(logsList, logs);
-  } catch (err) {
-    logsList.innerHTML = "<p>Could not load period logs.</p>";
-    console.error(err);
-  }
-}
 
 function renderCycleLogs(container, logs) {
   container.innerHTML = "";
