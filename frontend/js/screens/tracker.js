@@ -72,32 +72,25 @@ export async function renderTracker(onBack) {
     const formData = new FormData(form);
     const periodStartDate = formData.get("periodStartDate");
     const notes = formData.get("notes");
-    if (editingLogId) {
-      try {
+
+    try {
+      if (editingLogId) {
         await updateCycleLog({
           id: editingLogId,
           newPeriodStartDate: periodStartDate,
-          newNotes: notes
+          newNotes: notes,
         });
         editingLogId = null;
-        form.reset();
         submitButton.textContent = "Save Period";
-        await loadCycleLogs();
-      } catch (err) {
-        errorDisplay.textContent = err.message;
-        console.error(err);
-      }
-    } else {
-      try {
+      } else {
         await postCycleLog({ periodStartDate, notes });
-        form.reset();
-        await loadCycleLogs();
-      } catch (err) {
-        errorDisplay.textContent = err.message;
-        console.error(err);
       }
+      form.reset();
+      await loadCycleLogs();
+    } catch (err) {
+      errorDisplay.textContent = err.message;
+      console.error(err);
     }
-    
   });
 
   logsList.addEventListener("click", async (event) => {
