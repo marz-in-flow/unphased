@@ -67,24 +67,37 @@ export async function renderTracker(onBack) {
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-
     errorDisplay.textContent = "";
 
     const formData = new FormData(form);
     const periodStartDate = formData.get("periodStartDate");
     const notes = formData.get("notes");
-    console.log({ periodStartDate, notes });
-
-    try {
-      await postCycleLog({ periodStartDate, notes });
-
-      form.reset();
-
-      await loadCycleLogs();
-    } catch (err) {
-      errorDisplay.textContent = err.message;
-      console.error(err);
+    if (editingLogId) {
+      try {
+        await updateCycleLog({
+          id: editingLogId,
+          newPeriodStartDate: periodStartDate,
+          newNotes: notes
+        });
+        editingLogId = null;
+        form.reset();
+        submitButton.textContent = "Save Period";
+        await loadCycleLogs();
+      } catch (err) {
+        errorDisplay.textContent = err.message;
+        console.error(err);
+      }
+    } else {
+      try {
+        await postCycleLog({ periodStartDate, notes });
+        form.reset();
+        await loadCycleLogs();
+      } catch (err) {
+        errorDisplay.textContent = err.message;
+        console.error(err);
+      }
     }
+    
   });
 
   logsList.addEventListener("click", async (event) => {
@@ -97,12 +110,23 @@ export async function renderTracker(onBack) {
       await deleteCycleLog(logId);
       await loadCycleLogs();
     }
+    
+    if (event.target.classList.contains("edit-log-btn")) {
+      const entry = event.target.closest(".period-entry");
+      const logId = entry.dataset.logId;
+      editingLogId = logId;
+      const logToEdit = currentLogs.find((log) => {
+        return String(log.id) === String(logId);
+      });
+      dateInput.value = logToEdit.period_start_date.slice(0, 10);
+      notesInput.value = logToEdit.notes || "";
+      submitButton.textContent = "Update Period";
+      //await loadCycleLogs();
+    }
   });
 
   loadCycleLogs();
 }
-
-
 
 function renderCycleLogs(container, logs) {
   container.innerHTML = "";
