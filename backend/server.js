@@ -323,7 +323,7 @@ app.get("/daily-guidance", requireAuth, async (req, res) => {
 
 app.post("/cycle-logs", requireAuth, async (req, res) => {
   const userId = req.session.userId;
-  const { periodStartDate } = req.body;
+  const { periodStartDate, notes } = req.body;
 
   if (!periodStartDate) {
     return res.status(400).json({
@@ -376,14 +376,15 @@ app.post("/cycle-logs", requireAuth, async (req, res) => {
     }
 
     const insertCycleLogQuery = `
-      INSERT INTO cycle_logs (user_id, period_start_date)
-      VALUES ($1, $2)
-      RETURNING id, period_start_date
+      INSERT INTO cycle_logs (user_id, period_start_date, notes)
+      VALUES ($1, $2, $3)
+      RETURNING id, period_start_date, notes
     `;
 
     const insertResult = await pool.query(insertCycleLogQuery, [
       userId,
       periodStartDate,
+      notes || null
     ]);
 
     return res.status(201).json({
@@ -520,7 +521,7 @@ app.delete("/cycle-logs/:id", requireAuth, async (req, res) => {
   try {
     const deleteCycleLogQuery = `
       DELETE from cycle_logs
-      WHERE user_id = $1 AND id =$2
+      WHERE user_id = $1 AND id = $2
       RETURNING *
     `;
 

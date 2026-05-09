@@ -247,6 +247,12 @@ body.mode-onboarding {
   font-size: 2 rem;
 }
 
+.today-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
 .logout-btn {
   padding: 0.5rem 0.875rem;
   font: inherit;

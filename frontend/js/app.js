@@ -1,6 +1,6 @@
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js');
-}
+// if ('serviceWorker' in navigator) {
+//   navigator.serviceWorker.register('/sw.js');
+// }
 import { renderLogin } from './screens/login.js';
 import { renderOnboarding } from './screens/onboarding.js';
 import { renderToday } from './screens/today.js';
