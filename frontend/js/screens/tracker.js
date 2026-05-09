@@ -29,6 +29,8 @@ export async function renderTracker(onBack) {
       <p id="tracker-error"></p>
 
       <button type="submit">Save Period</button>
+      <button type="button" id="cancel-edit-btn" style="display:none;">Cancel</button>
+
     </form>
     
     <section>
@@ -114,7 +116,14 @@ export async function renderTracker(onBack) {
       dateInput.value = logToEdit.period_start_date.slice(0, 10);
       notesInput.value = logToEdit.notes || "";
       submitButton.textContent = "Update Period";
-      //await loadCycleLogs();
+      document.getElementById("cancel-edit-btn").style.display = "inline";
+
+      document.getElementById("cancel-edit-btn").addEventListener("click", () => {
+        editingLogId = null;
+        form.reset();
+        submitButton.textContent = "Save Period";
+        document.getElementById("cancel-edit-btn").style.display = "none";
+      });
     }
   });
 
