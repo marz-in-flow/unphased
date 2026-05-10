@@ -286,13 +286,25 @@ app.get("/daily-guidance", requireAuth, async (req, res) => {
     if (!profileResult.rows[0]) {
       return res.status(404).json({
         error: "No cycle profile found. Please enter your cycle information."
-      });
+      });  
     }
 
-    const cycleStartDate = profileResult.rows[0].cycle_start_date;
+    const logResult = await pool.query(
+      `SELECT period_start_date
+      FROM cycle_logs
+      WHERE user_id = $1
+      ORDER BY period_start_date DESC
+      LIMIT 1`,
+      [userId]
+    );
+
     const cycleLengthDays = profileResult.rows[0].cycle_length_days;
+    const profileCycleStartDate = profileResult.rows[0].cycle_start_date;
+    const latestLogDate = logResult.rows[0]?.period_start_date;
     
-    const dailyGuidance = getDailyGuidance(cycleStartDate, cycleLengthDays);
+    const activeCycleStartDate = latestLogDate || profileCycleStartDate;
+
+    const dailyGuidance = getDailyGuidance(activeCycleStartDate, cycleLengthDays);
     const phase = dailyGuidance.phase;
     const mode = dailyGuidance.mode;
     
@@ -325,6 +337,8 @@ app.get("/daily-guidance", requireAuth, async (req, res) => {
       phase: dailyGuidance.phase,
       mode: dailyGuidance.mode,
       cycle_profile: profileResult.rows[0],
+      cycle_start_date: activeCycleStartDate,
+      cycle_start_source: latestLogDate ? "period_log" : "profile",
       suggestions: suggestionsResult.rows,
     }); 
   } catch (err) {
