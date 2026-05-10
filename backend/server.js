@@ -298,11 +298,56 @@ app.get("/daily-guidance", requireAuth, async (req, res) => {
       [userId]
     );
 
+    const cycleLogsResult = await pool.query(
+      `
+      SELECT period_start_date
+      FROM cycle_logs
+      WHERE user_id = $1
+      ORDER BY period_start_date ASC
+      `,
+      [userId]
+    );
+    
     const cycleLengthDays = profileResult.rows[0].cycle_length_days;
     const profileCycleStartDate = profileResult.rows[0].cycle_start_date;
     const latestLogDate = logResult.rows[0]?.period_start_date;
-    
     const activeCycleStartDate = latestLogDate || profileCycleStartDate;
+    const periodStartDates = cycleLogsResult.rows.map((row) => {
+      return row.period_start_date;
+    });
+
+    let cycleLengthInsight = {
+      available: false,
+    };
+
+    if (periodStartDates.length >= 3) {
+      const gaps = [];
+
+      for (let i = 1; i < periodStartDates.length; i++) {
+        const previousDate = new Date(periodStartDates[i - 1]);
+        const currentDate = new Date(periodStartDates[i]);
+
+        const diffMs = currentDate - previousDate;
+        const diffDays = diffMs / (1000 * 60 * 60 * 24);
+
+        gaps.push(diffDays);
+      }
+      let sum = 0;
+
+      for (const gap of gaps) {
+        sum += gap;
+      }
+
+      const averageCycleLength = Math.round(sum / gaps.length);
+
+      cycleLengthInsight = {
+        available: true,
+        averageCycleLength,
+        loggedStartCount: periodStartDates.length,
+        gapCount: gaps.length,
+        storedCycleLength: cycleLengthDays,
+      };
+    }
 
     const dailyGuidance = getDailyGuidance(activeCycleStartDate, cycleLengthDays);
     const phase = dailyGuidance.phase;
@@ -331,7 +376,7 @@ app.get("/daily-guidance", requireAuth, async (req, res) => {
       ORDER BY md5($3 || $4 || id::text)
       `,
     [allowedEffortLevels, phase, todayKey, userId]);
-
+    
     res.json({
       day: dailyGuidance.day,
       phase: dailyGuidance.phase,
@@ -339,6 +384,7 @@ app.get("/daily-guidance", requireAuth, async (req, res) => {
       cycle_profile: profileResult.rows[0],
       cycle_start_date: activeCycleStartDate,
       cycle_start_source: latestLogDate ? "period_log" : "profile",
+      cycle_length_insight: cycleLengthInsight,
       suggestions: suggestionsResult.rows,
     }); 
   } catch (err) {

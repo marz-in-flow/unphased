@@ -35,6 +35,9 @@ export async function renderToday(onComplete) {
           ${data.mode}
         </h1>
         <p class="cycle-info">Day ${data.day} · ${data.phase}</p>
+        ${data.cycle_length_insight.available 
+          ? `<p class="cycle-insight">Current average cycle: <strong>${data.cycle_length_insight.averageCycleLength}</strong> days <br> Based on: <strong>${data.cycle_length_insight.loggedStartCount}</strong> entries</p>` 
+          : ''}
       </div>
 
       <div class="today-btns">

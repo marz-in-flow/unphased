@@ -97,10 +97,11 @@ body {
 }
 
 .energy-toggle {
-  background: var(--bg-surface);
+  background:rgba(255, 255, 255, 0.15);
   border-radius: 12px;
   padding: 1rem;
   margin-bottom: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
   width: fit-content;
   margin-left: auto;
   margin-right: auto;
@@ -604,6 +605,16 @@ body.mode-tracker {
   border: 1px solid #c45c5c;
   border-radius: 6px;
   cursor: pointer;
+}
+
+.cycle-insight {
+  font-size: 0.75rem;
+  margin: 8px 0 0 0;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 @media (min-width: 768px) {
