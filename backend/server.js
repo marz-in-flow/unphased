@@ -331,6 +331,10 @@ app.get("/daily-guidance", requireAuth, async (req, res) => {
       ORDER BY md5($3 || $4 || id::text)
       `,
     [allowedEffortLevels, phase, todayKey, userId]);
+    
+const cycleLengthInsight = {
+  available: false,
+};
 
     res.json({
       day: dailyGuidance.day,
@@ -339,6 +343,7 @@ app.get("/daily-guidance", requireAuth, async (req, res) => {
       cycle_profile: profileResult.rows[0],
       cycle_start_date: activeCycleStartDate,
       cycle_start_source: latestLogDate ? "period_log" : "profile",
+      cycle_length_insight: cycleLengthInsight,
       suggestions: suggestionsResult.rows,
     }); 
   } catch (err) {
