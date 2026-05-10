@@ -6,6 +6,12 @@ let cacheDate = null;
 let onUnauthorized = null;
 export let todayPickedIds = [];
 
+export function clearDailyGuidanceCache() {
+  cachedGuidance = null;
+  cachedLowEnergyGuidance = null;
+  cacheDate = null;
+}
+
 export function setOnUnauthorized(callback) {
   onUnauthorized = callback;
 }
@@ -183,6 +189,7 @@ export async function postCycleLog({ periodStartDate, notes }) {
     throw new Error(errorData.error || "Failed to save new period.");
   }
 
+  clearDailyGuidanceCache();
   return response.json();
 }
 
@@ -201,6 +208,7 @@ export async function updateCycleLog({ id, newPeriodStartDate, newNotes }) {
     throw new Error(errorData.error || "Failed to edit period entry.");
   }
 
+  clearDailyGuidanceCache();
   return response.json();
 }
 
@@ -214,5 +222,6 @@ export async function deleteCycleLog(id) {
     throw new Error(errorData.error || "Failed to delete period entry.");
   }
 
+  clearDailyGuidanceCache();
   return response.json();
 }
