@@ -380,12 +380,6 @@ app.post("/cycle-logs", requireAuth, async (req, res) => {
     const cycleStartDate = new Date(profileResult.rows[0].cycle_start_date);
     cycleStartDate.setHours(0, 0, 0, 0);
 
-    if (parsedPeriodStartDate < cycleStartDate) {
-      return res.status(400).json({
-        error: "periodStartDate cannot be earlier than cycleStartDate",
-      });
-    }
-
     const insertCycleLogQuery = `
       INSERT INTO cycle_logs (user_id, period_start_date, notes)
       VALUES ($1, $2, $3)
@@ -477,14 +471,6 @@ app.patch("/cycle-logs/:id", requireAuth, async (req, res) => {
       `,
       [userId]
     );
-
-    const cycleStartDate = profileResult.rows[0].cycle_start_date;
-
-    if (newPeriodStartDate < cycleStartDate) {
-      return res.status(400).json({
-        error: "newPeriodStartDate cannot be earlier than cycleStartDate",
-      });
-    }
   }
 
   try {
