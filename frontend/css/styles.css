@@ -8,6 +8,7 @@
   /* Text colors */
   --text-primary: #2a2a3a;
   --text-secondary: #5a5a6a;
+  --text-heading: #3a3a4a;
 
   /* Surface colors */
   --bg-surface: rgba(255, 255, 255, 0.55);
@@ -64,6 +65,7 @@ body {
   padding-bottom: env(safe-area-inset-bottom);
   background: rgba(255, 255, 255, 0.3);
   border-top: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 16px;
   position: fixed;
   bottom: 0;
   left: 0;
@@ -257,29 +259,32 @@ body.mode-onboarding {
   padding: 0.5rem 0.875rem;
   font: inherit;
   font-weight: 600;
-  background-color: var(--accent-purple);
-  color: white;
-  border: none;
+  background: none;
+  border: 2px solid;
   border-radius: 8px;
   cursor: pointer;
-  width: auto;
 }
 
 .mode-restore .logout-btn {
-  background-color: var(--restore);
+  color: var(--restore);
+  border-color: var(--restore);
 }
 
 .mode-build .logout-btn {
-  background-color: var(--build);
+  color: var(--build);
+  border-color: var(--build);
 }
 
 .mode-peak .logout-btn {
-  background-color: var(--peak);
+  color: var(--peak);
+  border-color: var(--peak);
 }
 
 .mode-protect .logout-btn {
-  background-color: var(--protect);
+  color: var(--protect);
+  border-color: var(--protect);
 }
+
 
 .screen-header {
   text-align: center;
@@ -289,7 +294,7 @@ body.mode-onboarding {
 .screen-title {
   font-size: 1.8rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--text-heading);
   margin: 0;
   text-transform: uppercase;
   letter-spacing: 1px;
@@ -370,6 +375,29 @@ body.mode-protect {
   background-attachment: fixed;
 }
 
+body.mode-tracker {
+  background: linear-gradient(
+    135deg,
+    #f4e0e0 0%,
+    #e8c8c8 32%,
+    #d4c8e8 68%,
+    #c0acd4 100%
+  );
+  background-attachment: fixed;
+}
+
+#period-tracker-form button[type="submit"] {
+  margin-top: 0.5rem;
+  padding: 0.875rem;
+  font: inherit;
+  font-weight: 600;
+  background-color: #a07898;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
 /* Mode-specific title colors */
 .mode-restore .mode-title {
   color: var(--restore);
@@ -424,7 +452,7 @@ body.mode-protect {
 }
 
 .suggestion-title {
-  color: var(--text-primary);
+  color: var(--text-heading);
   font-weight: 600;
   font-size: 1.1rem;
   margin: 0 0 0.5rem 0;
@@ -451,6 +479,131 @@ body.mode-protect {
 
 .mode-protect .suggestion-card {
   border-left-color: var(--protect);
+}
+
+.period-entry {
+  background: var(--bg-surface);
+  border-radius: 16px;
+  padding: 1rem;
+  margin-bottom: 0.875rem;
+  border-left: 3px solid;
+  border-left-color: #a07898;
+}
+
+.period-entry  h4 {
+  color: var(--text-heading);
+  font-weight: 600;
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem 0;
+}
+
+.period-entry p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* Tracker screen */
+.tracker-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.tracker-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #a07898;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+#back-btn {
+  padding: 0.5rem 0.875rem;
+  font: inherit;
+  font-weight: 600;
+  background: none;
+  color: #a07898;
+  border: 2px solid #a07898;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+#period-tracker-form {
+  background: var(--bg-surface);
+  border-radius: 16px;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+#period-tracker-form label {
+  color: var(--text-primary);
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+#period-tracker-form input,
+#period-tracker-form textarea {
+  padding: 0.75rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  font: inherit;
+  background: rgba(255, 255, 255, 0.7);
+}
+
+#cancel-edit-btn {
+  padding: 0.875rem;
+  font: inherit;
+  font-weight: 600;
+  background: none;
+  color: var(--text-secondary);
+  border: 1px solid var(--text-secondary);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+/* Period history section */
+.history-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 1rem 0;
+}
+
+.period-entry-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.edit-entry-btn {
+  padding: 0.4rem 0.75rem;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  background: none;
+  color: #a07898;
+  border: 1px solid #a07898;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.delete-entry-btn {
+  padding: 0.4rem 0.75rem;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 500;
+  background: none;
+  color: #c45c5c;
+  border: 1px solid #c45c5c;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
 @media (min-width: 768px) {

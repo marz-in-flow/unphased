@@ -1,10 +1,12 @@
 import { fetchCycleLogs, postCycleLog, updateCycleLog, deleteCycleLog } from "../api.js";
 
 export async function renderTracker(onBack) {
+  document.body.className = "mode-tracker";
+
   const content = document.getElementById("content");
   content.innerHTML = `
-    <header>
-      <h1>Period Tracker</h1>
+    <header class="tracker-header">
+      <h1 class="tracker-title">Period Tracker</h1>
       <button type="button" id="back-btn">Back</button>
     </header>
     
@@ -22,19 +24,19 @@ export async function renderTracker(onBack) {
         id="notes" 
         name="notes" 
         placeholder="Optional" 
-        rows="5" 
+        rows="3" 
         cols="33"
       ></textarea>
       
       <p id="tracker-error"></p>
 
-      <button type="submit">Save Period</button>
+      <button type="submit" id="submit-btn">Save Period</button>
       <button type="button" id="cancel-edit-btn" style="display:none;">Cancel</button>
 
     </form>
     
     <section>
-      <h2>Period History</h2>
+      <h2 class="history-title">Period History</h2>
       <div id="period-log"></div>
     </section>
   `;
@@ -44,7 +46,7 @@ export async function renderTracker(onBack) {
   const logContainer = document.getElementById("period-log");
   const dateInput = document.getElementById("period-start-date");
   const notesInput = document.getElementById("notes");
-  const submitButton = form.querySelector('button[type="submit"]');
+  const submitButton = document.getElementById("submit-btn");
 
   let logEntries = []; //logs currently loaded from the backend
   let activeEditId = null; //null means add mode; some id means edit mode
