@@ -1,4 +1,4 @@
-# UnPhased — Design Overview (Phase 1 MVP)
+# unPhased — Design Overview (Phase 1 MVP)
 
 This document outlines the primary design artifacts for the Phase 1 MVP.
 
@@ -40,7 +40,7 @@ Defines:
 ---
 
 ## 5. MVP Planning & Specifications (Working Document)
-[UnPhased MVP Brainstorm & Specification Document](https://docs.google.com/document/d/19X9Q4KkbTfQIPjMSKcaG9A29Xg6pUa4mwWJgXYhSLr0/edit?usp=sharing)
+[unPhased MVP Brainstorm & Specification Document](https://docs.google.com/document/d/19X9Q4KkbTfQIPjMSKcaG9A29Xg6pUa4mwWJgXYhSLr0/edit?usp=sharing)
 
 This working document captures early product brainstorming, MVP scoping decisions, and evolving specifications that informed the Phase 1 backend architecture and database design.
 

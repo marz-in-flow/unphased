@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to UnPhased will be documented here.
+All notable changes to unPhased will be documented here.
 
 ## 2026-05-10 | Phase 5: Final Wrap-up
 

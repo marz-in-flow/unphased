@@ -1,7 +1,7 @@
-# UnPhased
+# unPhased
 **Daily Direction, Powered by Your Biology.**
 
-UnPhased is a cycle-aware web app that helps neurodivergent women plan their day around capacity instead of pushing through it.
+unPhased is a cycle-aware web app that helps neurodivergent women plan their day around capacity instead of pushing through it.
 
 The app estimates the user’s current cycle phase, assigns a daily mode — Restore, Build, Peak, or Protect — and offers simple Mind, Body, and Rest suggestions that match the user’s energy level. Users can also log period start dates over time so the app can refine cycle predictions and support more personalized guidance.
 
@@ -17,10 +17,10 @@ Most planning tools treat every day like it should have the same capacity. For p
 
 Without guidance that accounts for those shifts, users may overcommit, ignore low-energy signals, or spend too much energy deciding what kind of day they are having.
 
-UnPhased was built around a different idea: daily planning should adapt to the user, not the other way around.
+unPhased was built around a different idea: daily planning should adapt to the user, not the other way around.
 
 ## Solution Overview
-UnPhased reduces decision fatigue by turning cycle data into one clear daily orientation.
+unPhased reduces decision fatigue by turning cycle data into one clear daily orientation.
 
 The app:
 - Estimates the user’s current cycle phase from a start date and cycle length
@@ -29,7 +29,7 @@ The app:
 - Offers a Low Energy Mode for gentler recommendations
 - Uses logged period history to refine predictions over time
 
-UnPhased is designed around sustainable alignment, not productivity maximization.
+unPhased is designed around sustainable alignment, not productivity maximization.
 
 ## Features
 - **Daily Guidance** — a clear daily orientation based on the user’s estimated cycle phase. Providing suggestions across Mind, Body, and Rest categories
@@ -40,7 +40,7 @@ UnPhased is designed around sustainable alignment, not productivity maximization
 - **Progressive Web App** — installable on mobile devices with offline-aware service worker support
 
 <p align="center">
-  <img src="./docs/screenshots/today.png" width="160" alt="UnPhased Today screen showing daily mode, phase, and suggestion card" />
+  <img src="./docs/screenshots/today.png" width="160" alt="unPhased Today screen showing daily mode, phase, and suggestion card" />
   <img src="./docs/screenshots/body.png" width="160" alt="Body tab with phase-aware suggestions" />
   <img src="./docs/screenshots/tracker.png" width="160" alt="Period tracker with log history" />
 </p>
@@ -52,7 +52,7 @@ UnPhased is designed around sustainable alignment, not productivity maximization
 **Deployment**: Render (web service + managed Postgres)
 
 ## Architecture
-UnPhased follows a single-server architecture where Express serves both the JSON API and the static frontend assets.
+unPhased follows a single-server architecture where Express serves both the JSON API and the static frontend assets.
 
 ### Frontend
 - Single-container rendering pattern: each screen exports a `render()` function that injects HTML into a shared `#content` div

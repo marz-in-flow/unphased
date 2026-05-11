@@ -1,4 +1,4 @@
-# UnPhased — Phase → Mode Mapping (Phase 1 MVP)
+# unPhased — Phase → Mode Mapping (Phase 1 MVP)
 
 ## Overview
 
