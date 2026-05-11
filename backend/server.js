@@ -20,6 +20,7 @@ const { config } = require("dotenv");
 
 // ---------- App and database setup ----------
 const app = express();
+app.set("trust proxy", 1);
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
@@ -37,7 +38,7 @@ app.use(session({
   cookie: {
     httpOnly: true,
     sameSite: "lax",
-    secure: false,
+    secure: process.env.NODE_ENV === "production",
     maxAge: 1000 * 60 * 60 * 24 * 7
   }
 }));
