@@ -13,6 +13,7 @@ const express = require("express");
 const session = require("express-session")
 const argon2 = require("argon2");
 const path = require("path");
+const pgSession = require("connect-pg-simple")(session);
 const { Pool } = require("pg");
 const { getDailyGuidance, getEffortLevels } = require("./utils/cycleUtils");
 const { config } = require("dotenv");
@@ -32,6 +33,10 @@ const frontendPath = path.join(__dirname, "../frontend");
 app.use(express.static(frontendPath));
 app.use(express.json());
 app.use(session({
+  store: new pgSession({
+    pool:pool,
+    createTableIfMissing: true,
+  }),
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
