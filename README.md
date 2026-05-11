@@ -8,7 +8,7 @@ The app estimates the user’s current cycle phase, assigns a daily mode — Res
 The goal is not to maximize productivity.  
 The goal is to make daily decisions feel lighter, more sustainable, and more aligned with the body.
 
-🔗 **Live App**: [unphased.onrender.com]([https://unphased.onrender.com])
+🔗 **Live App**: [unphased.onrender.com](https://unphased.onrender.com)
 
 > ⚠️ Hosted on Render's free tier — the app spins down after 15 minutes of inactivity. First load after idle may take ~30 seconds to wake up.
 
