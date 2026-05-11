@@ -10,10 +10,6 @@ The goal is to make daily decisions feel lighter, more sustainable, and more ali
 
 🔗 **Live App**: [unphased.onrender.com](https://unphased.onrender.com)
 
-<p align="center">
-  <img src="./docs/screenshots/today.png" width="280" alt="UnPhased Today screen showing daily mode, phase, and suggestion card" />
-</p>
-
 > ⚠️ Hosted on Render's free tier — the app spins down after 15 minutes of inactivity. First load after idle may take ~30 seconds to wake up.
 
 ## The Problem
@@ -44,9 +40,9 @@ UnPhased is designed around sustainable alignment, not productivity maximization
 - **Progressive Web App** — installable on mobile devices with offline-aware service worker support
 
 <p align="center">
-  <img src="./docs/screenshots/login.png" width="220" alt="Login screen" />
-  <img src="./docs/screenshots/body.png" width="220" alt="Body tab with phase-aware suggestions" />
-  <img src="./docs/screenshots/tracker.png" width="220" alt="Period tracker with log history" />
+  <img src="./docs/screenshots/today.png" width="160" alt="UnPhased Today screen showing daily mode, phase, and suggestion card" />
+  <img src="./docs/screenshots/body.png" width="160" alt="Body tab with phase-aware suggestions" />
+  <img src="./docs/screenshots/tracker.png" width="160" alt="Period tracker with log history" />
 </p>
 
 ## Tech Stack
