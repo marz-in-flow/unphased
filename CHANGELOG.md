@@ -2,6 +2,77 @@
 
 All notable changes to UnPhased will be documented here.
 
+## 2026-05-10 | Phase 5: Final Wrap-up
+
+### Added
+- Render deployment of the vanilla JS version with managed PostgreSQL
+- Postgres-backed session store using `connect-pg-simple` (replaces default MemoryStore)
+- `trust proxy` setting for HTTPS behind Render's reverse proxy
+- Conditional `secure` cookie attribute (HTTPS-only in production)
+- LICENSE (MIT)
+- Live URL in README
+
+### Changed
+- README rewritten to reflect final app state, features, tech stack, and setup instructions
+- Port reads from `process.env.PORT` (falls back to 3000 locally)
+
+### Removed
+- Cookie test artifacts (`cookies-*.txt`) from repo; added gitignore pattern
+
+
+## 2026-05-10 | Phase 4 Cap: Cycle Length Insight
+
+### Added
+- Average cycle length calculated in `/daily-guidance` from period start gaps when 3+ logs exist
+- Cycle length insight banner on Today displaying current average and logged period count (informational only — no effect on mode, phase, or profile)
+
+
+## 2026-05-09 | Phase 4: Period Tracker
+
+### Added
+- `cycle_logs` table with `(user_id, period_start_date)` unique constraint
+- `POST`, `GET`, `PATCH`, `DELETE /cycle-logs` endpoints with user ownership verification
+- Period Tracker screen with form for logging periods and list view of past entries
+- Edit mode reusing the tracker form (cancel button + refresh after save)
+- Delete behavior via event delegation on the logs container
+- Period tracker entry button on Today header
+- Onboarding `cycleStartDate` seeded into `cycle_logs` so the first period is part of history
+- Cached daily guidance cleared after period logs are added, edited, or deleted
+
+### Changed
+- `/daily-guidance` uses the most recent `cycle_logs.period_start_date` as the active cycle start; falls back to `cycle_profiles.cycle_start_date` if no logs exist
+- POST validation: future dates and duplicates blocked (409 on duplicates); removed hard lower bound on `cycle_start_date` so users can correct onboarding dates or backfill history
+- PATCH supports partial updates via `COALESCE` to preserve unchanged fields
+- Period Tracker uses neutral styling to avoid inheriting stale cycle mode colors
+
+### Fixed
+- Service worker caching stale `api.js` during development (resolved by clearing/unregistering cache)
+- Date-only string comparison for edit validation, avoiding timezone shifts when editing the seeded onboarding log
+
+
+## 2026-04-29 | Phase 3: Auth Frontend Integration
+
+### Added
+- Login screen wired to `POST /login` with success/error handling
+- Register screen mirroring login's structure, wired to `POST /register`
+- `GET /me` endpoint reporting authentication and cycle profile state (200 in all cases)
+- Auth-aware app load: `routeAfterAuth` in `app.js` routes to login, onboarding, or Today based on `/me` response
+- `onComplete` callback pattern decoupling screen rendering from routing logic
+- Logout button on Today header — clears session, in-memory cache, and device-level localStorage (low energy toggle, `todayPickedIds`)
+- Fetch wrapper catching 401 on protected routes and routing user back to login with session-expired message
+- `postLogin`, `postRegister`, `postLogout`, `getMe` in `api.js`, all with `credentials: "include"`
+
+### Changed
+- md5 suggestion ordering seed now factors `userId` (`todayKey || userId || id`) so users with the same cycle profile get different suggestion ordering
+- Cycle profile moved from localStorage to database, scoped per authenticated user
+- localStorage retained for device-level preferences only
+
+### Fixed
+- `/me` returns 200 for unauthenticated (was 401), 500 only for genuine server errors
+- Missing `req.session.save()` in `/register` that prevented authentication on the next request after signup
+- Backend 401 returning HTML instead of JSON on protected routes
+
+
 ## 2026-04-22 | Auth Integration
 
 ### Added
@@ -18,6 +89,7 @@ All notable changes to UnPhased will be documented here.
 ### Removed
 - `period_length_days` column and references (deferred to tracker phase)
 - bcrypt dependency (replaced with argon2)
+
 
 ## 2026-04-13 | Phase 2: Frontend Polish  
 
@@ -48,6 +120,7 @@ All notable changes to UnPhased will be documented here.
 - Shared phaseBlurbs.js with phase-aware descriptions for all tabs
 - todayPickedIds exclusion to prevent duplicate suggestions across tabs
 
+
 ## 2026-03-26 | Phase 2: Frontend 
 
 ### Added
@@ -55,6 +128,7 @@ All notable changes to UnPhased will be documented here.
 - Dual cache system for default and low energy suggestion responses
 - Today screen suggestion tracking for tab deduplication
 - fetchDailyGuidance, isLowEnergy, and setLowEnergy functions in api.js
+
 
 ## 2026-03-25 | Phase 2: Frontend 
 
@@ -79,6 +153,7 @@ All notable changes to UnPhased will be documented here.
 - Updated Bootstrap CDN to matching versions
 - Added nested try/catch for localStorage in onboarding
 
+
 ## 2026-03-23 | Phase 2: Frontend 
 
 ### Added 
@@ -97,6 +172,7 @@ All notable changes to UnPhased will be documented here.
 ### Fixed
 - Resolved local development issues with onboarding POST requests across separate frontend/backend origins
 
+
 ## 2026-03-17 | Phase 2: Frontend Setup
 
 ### Added
@@ -105,6 +181,7 @@ All notable changes to UnPhased will be documented here.
 - Placeholder render functions for all screens
 - index.html with Bootstrap CDN
 
+
 ## 2026-03-17 | Phase 1: MVP Backend 
 
 ### Added
@@ -112,6 +189,7 @@ All notable changes to UnPhased will be documented here.
 - Category column on suggestions table (mind, move, rest, nourish)
 - Expanded seed data to 50 suggestions across all phases and categories
 - Executive function note added to effort level documentation
+
 
 ## 2026-03-10 | Phase 1: MVP Backend + Design
 ### Added
@@ -124,6 +202,7 @@ All notable changes to UnPhased will be documented here.
 - Organized docs into architecture, schema, and wireframes subfolders
 - Updated design overview with new file paths and wireframe links
 
+
 ## 2026-03-05 | Phase 1: MVP Backend
 ### Added
 - Cycle day calculation using start date and today's date
@@ -131,6 +210,7 @@ All notable changes to UnPhased will be documented here.
 - Mode mapping from phase to daily guidance mode (Restore, Build, Peak, Protect)
 - `getDailyGuidance` utility function wiring all three together
 - Wired cycle logic into `/today` endpoint replacing all placeholders
+
 
 ## 2026-03-01 | Phase 1: MVP Backend | Phase 0: Setup
 ### Added
@@ -150,6 +230,7 @@ All notable changes to UnPhased will be documented here.
 
 ### Changed
 - API folder renamed to api-tests for clarity
+
 
 ## 2026-02-26 | Phase 0: Project Setup
 ### Added
